@@ -4,4 +4,8 @@ from main_app.models import Event
 
 class EventListAPIView(ListAPIView):
     serializer_class = EventSerializer
-    queryset = Event.objects.all().prefetch_related('tags', 'speakers').select_related('image')
+    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
+
+class EventCreateAPIView(CreateAPIView):
+    serializer_class = EventSerializer
+    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
