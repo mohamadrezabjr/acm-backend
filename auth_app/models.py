@@ -1,12 +1,30 @@
+import re
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_integer
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
+from auth_app.managers import UserManager
 
-User = get_user_model()
+def valid_phone_ir(value):
+    pattern = r'^09\d{9}$'
+    if not re.match(pattern , value) or len(value) != 11:
+        raise ValidationError("شماره تلفن نامعتبر است")
+    return value
+
+class User(PermissionsMixin, AbstractBaseUser):
+    phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True)
+    is_admin = models.BooleanField(default=False)
+    is_creator = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'phone'
+
+    objects = UserManager()
 
 class Person(models.Model):
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
+    name = models.CharField(max_length=128, null=True, blank=True)
     position = models.CharField(max_length=64, null=True, blank = True)
-    description = models.TextField(null = True, blank=True)
+    bio = models.TextField(null = True, blank=True)
     registered_events = models.ManyToManyField(
         'main_app.Event',
             related_name='participants',
