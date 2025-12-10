@@ -17,3 +17,10 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields ='__all__'
 
+class PersonGetOrCreateSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(
+        required=False,
+        queryset=User.objects.all()
+    )
+    position = serializers.CharField(max_length=64, required=False)
+    description = serializers.CharField(required=False)
