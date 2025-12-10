@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'guardian',
+
     'main_app',
     'auth_app',
 ]
@@ -102,7 +104,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
