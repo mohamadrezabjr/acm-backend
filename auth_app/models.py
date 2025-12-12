@@ -18,6 +18,10 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     USERNAME_FIELD = 'phone'
 
+    @property
+    def is_staff(self):
+        return self.is_admin
+
     objects = UserManager()
 
 class Person(models.Model):
