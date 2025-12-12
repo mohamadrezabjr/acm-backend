@@ -22,6 +22,14 @@ class User(PermissionsMixin, AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
 
+    @property
+    def role(self):
+        if self.is_admin or self.is_superuser:
+            return "admin"
+        if self.is_creator:
+            return "creator"
+        return "user"
+
     objects = UserManager()
 
 class Person(models.Model):

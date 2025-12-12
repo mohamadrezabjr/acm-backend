@@ -1,7 +1,5 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 @api_view(['GET'])
 def auth_me(request):
@@ -10,5 +8,8 @@ def auth_me(request):
         return Response({
             "id" : user.id,
             "phone" : user.phone,
+            "role" : user.role,
+            "firstName" : user.person.name,
+            "bio" : user.person.bio
         })
     return Response({'detail' : "Unauthorized"}, status=403)
