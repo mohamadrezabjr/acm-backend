@@ -9,7 +9,10 @@ def auth_me(request):
             "id" : user.id,
             "phone" : user.phone,
             "role" : user.role,
-            "firstName" : user.person.name,
-            "bio" : user.person.bio
+            "first_name" : user.person.first_name,
+            "last_name" : user.person.last_name,
+            "bio" : user.person.bio,
+            "student_id" : user.person.student_id
         })
+
     return Response({'detail' : "Unauthorized"}, status=403)

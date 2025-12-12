@@ -34,7 +34,9 @@ class User(PermissionsMixin, AbstractBaseUser):
 
 class Person(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
-    name = models.CharField(max_length=128, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    first_name = models.CharField(max_length=128, null=True, blank=True)
+    last_name = models.CharField(max_length=128, null=True, blank=True)
     position = models.CharField(max_length=64, null=True, blank = True)
     bio = models.TextField(null = True, blank=True)
     registered_events = models.ManyToManyField(
@@ -47,3 +49,4 @@ class Person(models.Model):
         related_name='participants',
         blank = True
     )
+    student_id = models.CharField(max_length=10, blank = True, null= True)
