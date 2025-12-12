@@ -32,6 +32,9 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     objects = UserManager()
 
+    def __str__(self):
+        return self.phone
+
 class Person(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField(null=True, blank=True)
@@ -50,3 +53,6 @@ class Person(models.Model):
         blank = True
     )
     student_id = models.CharField(max_length=10, blank = True, null= True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} : {self.student_id}"
