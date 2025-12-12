@@ -20,6 +20,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = [
             'title',
             'slug',
+            'description',
             'tags',
             'start_date',
             'end_date',
