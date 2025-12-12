@@ -27,7 +27,7 @@ class Course(models.Model):
     location = models.CharField(max_length=256, blank=True, null=True)
     price = models.BigIntegerField(default=0)
     organizer = models.CharField(max_length=64, null=True, blank=True)
-    image = models.ImageField(upload_to='media/courses',null=True, blank=True)
+    image = models.ImageField(upload_to='courses/',null=True, blank=True)
     instructors = models.ManyToManyField(
         'auth_app.Person',
         related_name='courses_as_instructor',
@@ -54,7 +54,7 @@ class Event(models.Model):
     location = models.CharField(max_length=256, blank=True, null=True)
     price = models.BigIntegerField(default=0)
     organizer = models.CharField(max_length=64, null=True, blank=True)
-    image = models.ImageField(upload_to='media/events',null=True, blank=True)
+    image = models.ImageField(upload_to='events/',null=True, blank=True)
     speakers = models.ManyToManyField(
         'auth_app.Person',
         related_name='events_as_speaker',
