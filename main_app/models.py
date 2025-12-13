@@ -6,6 +6,19 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+class TimePlan(models.Model):
+    class WeekDays(models.TextChoices):
+        SATURDAY = 'Sat', "Saturday"
+        SUNDAY = 'Sun', "Sunday"
+        MONDAY = 'Mon', "Monday"
+        TUESDAY = 'Tue', "Tuesday"
+        WEDNESDAY = 'Wed', "Wednesday"
+        THURSDAY = 'Thu', "Thursday"
+        FRIDAY = 'Fr', "Friday"
+    weekday = models.CharField(max_length=10, choices=WeekDays.choices)
+    time_start = models.TimeField()
+    time_end = models.TimeField(null=True, blank=True)
+    course = models.ForeignKey("main_app.Course", on_delete=models.CASCADE)
 
 class Course(models.Model):
     title = models.CharField(max_length=256)
