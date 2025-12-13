@@ -1,7 +1,4 @@
-from django.core.checks.security.base import check_sts
 from rest_framework import serializers
-from sqlparse import split
-
 from auth_app.models import Person
 from main_app.models import Event, Tag
 from auth_app.serializers import PersonSerializer, PersonGetOrCreateSerializer

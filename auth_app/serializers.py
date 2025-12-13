@@ -22,7 +22,8 @@ class PersonGetOrCreateSerializer(serializers.Serializer):
         required=False,
         queryset=User.objects.all()
     )
-    name = serializers.CharField(max_length=128, required=False)
+    first_name = serializers.CharField(max_length=128, required=False)
+    last_name = serializers.CharField(max_length=128, required=False)
     position = serializers.CharField(max_length=64, required=False)
     bio = serializers.CharField(required=False)
 

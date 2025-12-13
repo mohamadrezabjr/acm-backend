@@ -8,6 +8,5 @@ class RegisteredEventsListAPIView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = user.person.registered_events.all()
-        print(queryset)
         return queryset
 
