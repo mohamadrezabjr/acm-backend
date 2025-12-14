@@ -13,3 +13,7 @@ class CourseRetrieveAPIView(RetrieveAPIView):
     queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
     lookup_field = 'slug'
 
+class CourseCreateAPIView(CreateAPIView):
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
+    permission_classes = [IsAuthenticated, IsCreator | IsSuperUser | IsAdmin]
