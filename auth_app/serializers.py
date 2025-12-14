@@ -27,6 +27,38 @@ class PersonGetOrCreateSerializer(serializers.Serializer):
     position = serializers.CharField(max_length=64, required=False)
     bio = serializers.CharField(required=False)
 
+class AuthMeSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+    bio = serializers.SerializerMethodField()
+    student_id =serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    def get_first_name(self, obj):
+        return obj.person.first_name
+    def get_last_name(self, obj):
+        return obj.person.last_name
+    def get_bio(self, obj):
+        return obj.person.bio
+    def get_student_id(self, obj):
+        return obj.person.student_id
+    def get_avatar(self, obj):
+        if not obj.person.avatar:
+            return None
+        return obj.person.avatar.url
+    class Meta:
+        model = User
+        fields = [
+           'phone',
+            'id',
+            'role',
+            'first_name',
+            'last_name',
+            'bio',
+            'student_id',
+            'avatar'
+        ]
 class UserRegistrationSerializer(serializers.Serializer):
     phone = serializers.CharField(validators=[valid_phone_ir])
     password = serializers.CharField(write_only=True)
@@ -40,10 +72,8 @@ class UserRegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError('user with this phone already exists')
         return value
     def create(self, validated_data):
-        print(validated_data)
         phone = validated_data.pop('phone')
         password = validated_data.pop('password')
-        print(phone)
         user = User.objects.create(phone = phone)
         user.set_password(password)
         user.save()
