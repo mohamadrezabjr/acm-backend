@@ -5,4 +5,4 @@ from auth_app.models import User, Person
 @receiver(post_save, sender=User)
 def create_person(sender, instance, created, **kwargs):
     if created:
-        person = Person.objecrs.create(user=instance)
+        person = Person.objects.create(user=instance)
