@@ -33,7 +33,7 @@ ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
 if ENVIRONMENT == 'development':
     DEBUG = True
 else :
-    DEBUG = True
+    DEBUG = False
 
 
 ALLOWED_HOSTS = ['*']
