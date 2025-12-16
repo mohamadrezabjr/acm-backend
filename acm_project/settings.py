@@ -33,28 +33,21 @@ ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
 if ENVIRONMENT == 'development':
     DEBUG = True
 else :
-    DEBUG = False
+    DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
-
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    f"http://{SERVER_IP}:3000",
-    "http://127.0.0.1:3000"
-]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    f"http://{SERVER_IP}:3000",
-    "http://127.0.0.1:3000"
-
-]
+CORS_ALLOW_ALL_ORIGINS = False  
+CORS_ALLOW_CREDENTIALS = True  
 
 SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False
+
 CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = False
 
 # Application definition
 
@@ -121,9 +114,9 @@ else :
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB"),
-            "USER": os.environ.get("POSTGRES_USER"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "NAME": str(os.environ.get("POSTGRES_DB")),
+            "USER": str(os.environ.get("POSTGRES_USER")),
+            "PASSWORD": str(os.environ.get("POSTGRES_PASSWORD")),
             "HOST": "db",
             "PORT": 5432,
         }
@@ -179,8 +172,13 @@ AUTH_USER_MODEL ='auth_app.User'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_ROOT = "/app/staticfiles"
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
