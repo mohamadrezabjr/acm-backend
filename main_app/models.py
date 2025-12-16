@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+import uuid
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True, db_index=True)
 
@@ -47,6 +47,11 @@ class Course(models.Model):
         blank = True,
     )
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        super().save(*args, **kwargs)
+
 class Event(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField(blank=True, null = True)
@@ -73,3 +78,7 @@ class Event(models.Model):
         related_name='events_as_speaker',
         blank = True,
     )
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        super().save(*args, **kwargs)
