@@ -15,7 +15,6 @@ def auth_me(request):
 class UserRegister(APIView):
     serializer_class = UserRegistrationSerializer
     def post(self, request):
-        print(request.data)
         serialized_data = self.serializer_class(data = request.data)
 
         if serialized_data.is_valid():
