@@ -40,6 +40,12 @@ class UserAdmin(BaseUserAdmin):
             form.base_fields["is_creator"].disabled = True
         return form
 
+    def save_model(self, request, obj, form, change):
+        is_created = obj.pk is None
+        super().save_model(request, obj, form, change)
+
+        if is_created:
+            person = Person.objects.create(user = obj)
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Person)
