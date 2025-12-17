@@ -12,11 +12,12 @@ class EventSerializer(serializers.ModelSerializer):
     )
     speakers = PersonGetOrCreateSerializer(many=True, required=False)
     
-    image = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField(required = False)
 
     def get_image(self, obj):
-        return obj.image.url
-
+        if obj.image:
+            return obj.image.url
+        return None
     class Meta:
         model = Event
         fields = [
@@ -66,11 +67,12 @@ class CourseSerializer(serializers.ModelSerializer):
     instructors = PersonGetOrCreateSerializer(many=True, required=False)
     time_plans = TimePlanSerializer(many=True, required=False)
 
-    image = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField(required = False)
 
     def get_image(self, obj):
-        return obj.image.url
-
+        if obj.image:
+            return obj.image.url
+        return None
     class Meta:
         model = Course
         fields = [
