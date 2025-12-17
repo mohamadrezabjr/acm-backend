@@ -30,7 +30,7 @@ class Course(models.Model):
         null=True,
         blank=True
     )
-    tags = models.ManyToManyField(Tag, related_name='courses')
+    tags = models.ManyToManyField(Tag, related_name='courses', blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     registration_start_at = models.DateTimeField(default=timezone.now)
@@ -62,7 +62,7 @@ class Event(models.Model):
         null=True,
         blank=True
     )
-    tags = models.ManyToManyField(Tag, related_name='events')
+    tags = models.ManyToManyField(Tag, related_name='events', blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     registration_start_at = models.DateTimeField(default=timezone.now)
