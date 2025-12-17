@@ -16,7 +16,6 @@ class TagSerializer(serializers.Serializer):
 class EventCreateSerializer(serializers.ModelSerializer):
     tags = serializers.ListSerializer(child=TagSerializer(), required=False)
     speakers = PersonGetOrCreateSerializer(many=True, required=False)
-
     image = serializers.SerializerMethodField(required = False)
 
     def get_image(self, obj):
@@ -146,4 +145,4 @@ class CourseSerializer(serializers.ModelSerializer):
                 course.time_plans.set(serializer.data)
             else:
                 raise serializers.ValidationError(serializer.errors)
-        return course
+        return course   

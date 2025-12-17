@@ -11,6 +11,7 @@ from main_app.permissions import IsCreator, IsAdmin, IsSuperUser
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+
 class EventListAPIView(ListAPIView):
     serializer_class = EventListSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
@@ -19,6 +20,7 @@ class EventRetrieveAPIView(RetrieveAPIView):
     serializer_class = EventListSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
     lookup_field = 'slug'
+    
 class EventCreateAPIView(CreateAPIView):
     serializer_class = EventCreateSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
