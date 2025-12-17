@@ -104,3 +104,10 @@ class CourseSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError(serializer.errors)
         return course
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = [
+            'id',
+            'name',
+        ]

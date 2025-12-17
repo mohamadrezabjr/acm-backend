@@ -1,18 +1,13 @@
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
+
 from auth_app.models import Person, valid_phone_ir
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields =[
-            'first_name',
-            'last_name',
-            'username'
-        ]
+
 class PersonSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = PrimaryKeyRelatedField(required=False, read_only=True)
     class Meta:
         model = Person
         fields ='__all__'
