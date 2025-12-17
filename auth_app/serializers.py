@@ -13,14 +13,23 @@ class PersonSerializer(serializers.ModelSerializer):
         fields ='__all__'
 
 class PersonGetOrCreateSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False, allow_null=True)
     user = serializers.PrimaryKeyRelatedField(
         required=False,
         queryset=User.objects.all()
     )
-    first_name = serializers.CharField(max_length=128, required=False)
-    last_name = serializers.CharField(max_length=128, required=False)
-    position = serializers.CharField(max_length=64, required=False)
-    bio = serializers.CharField(required=False)
+    first_name = serializers.CharField(max_length=128, required=False, allow_null=True, allow_blank=True)
+    last_name = serializers.CharField(max_length=128, required=False, allow_null=True, allow_blank=True)
+    position = serializers.CharField(max_length=64, required=False, allow_null=True, allow_blank=True )
+    bio = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+    def create(self, validated_data):
+        id = validated_data.pop('id')
+        if not id :
+            person = Person.objects.create(**validated_data)
+        else:
+            person = Person.objects.filter(id=id).first()
+        return person
 
 class AuthMeSerializer(serializers.ModelSerializer):
 
