@@ -47,5 +47,6 @@ class UserAdmin(BaseUserAdmin):
         if is_created:
             person = Person.objects.create(user = obj)
 
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Person)
