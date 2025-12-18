@@ -157,9 +157,18 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES" : (
         "auth_app.authentication.JWTAuthenticationByCookie",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     )
 }
+
+if ENVIRONMENT == 'development':
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "auth_app.authentication.JWTAuthenticationByCookie",
+            "rest_framework_simplejwt.authentication.JWTAuthentication",
+            "rest_framework.authentication.SessionAuthentication",
+        )
+    }
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
