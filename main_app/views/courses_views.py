@@ -43,5 +43,6 @@ class CourseCreateAPIView(CreateAPIView):
 
         if image:
             course.image = image
+            course.save(update_fields=['image'])
 
         return Response({"message": "Course successfully created"}, status=201)
