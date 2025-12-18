@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = str(os.getenv('SECRET_KEY'))
+SECRET_KEY = str(os.getenv('DJANGO_SECRET_KEY'))
 
 SERVER_IP = str(os.getenv('SERVER_IP'))
 ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
@@ -32,22 +32,25 @@ ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == 'development':
     DEBUG = True
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+
 else :
     DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    CORS_ALLOW_CREDENTIALS = True
 
+    CORS_ALLOW_ALL_ORIGINS = False
 
-ALLOWED_HOSTS = ['*']
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = False
+
+    CSRF_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SECURE = False
+
 CORS_ALLOW_CREDENTIALS = True
-
-
-CORS_ALLOW_ALL_ORIGINS = False  
-CORS_ALLOW_CREDENTIALS = True  
-
-SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False
-
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = False
 
 # Application definition
 
