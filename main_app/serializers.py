@@ -46,17 +46,20 @@ class EventCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         speakers = validated_data.pop('speakers')
         tags = validated_data.pop("tags")
-        event = Event.objects.create(**validated_data)
-        for tag in tags :
-            tag_serializer = TagSerializer(data=tag)
-            tag_serializer.is_valid(raise_exception=True)
-            tag = tag_serializer.save()
-            event.tags.add(tag)
-        for speaker in speakers:
-            person_serializer = PersonGetOrCreateSerializer(data=speaker)
-            person_serializer.is_valid(raise_exception=True)
-            person = person_serializer.save()
-            event.speakers.add(person)
+        with transaction.atomic():
+            event = Event.objects.create(**validated_data)
+            if tags:
+                serializer_tags = TagSerializer(data=tags, many=True)
+                serializer_tags.is_valid(raise_exception=True)
+                tags = serializer_tags.save()
+
+                event.tags.set(tags)
+            if speakers:
+                speakers_serializer = PersonGetOrCreateSerializer(data=speakers, many=True)
+                speakers_serializer.is_valid(raise_exception=True)
+                speakers = speakers_serializer.save()
+
+                event.speakers.set(speakers)
         return event
 
 class EventListSerializer(serializers.ModelSerializer):
