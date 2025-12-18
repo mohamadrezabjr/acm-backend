@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db import transaction
+
 from auth_app.models import Person
 from main_app.models import Event, Tag, Course, TimePlan
 from auth_app.serializers import PersonSerializer, PersonGetOrCreateSerializer
@@ -100,7 +102,7 @@ class TimePlanSerializer(serializers.ModelSerializer):
             'time_start',
             'time_end',
         ]
-class CourseSerializer(serializers.ModelSerializer):
+class CourseListSerializer(serializers.ModelSerializer):
     tags = serializers.SlugRelatedField(
         many=True,
         queryset=Tag.objects.all(),
@@ -135,14 +137,65 @@ class CourseSerializer(serializers.ModelSerializer):
             'instructors',
             'time_plans'
         ]
+
+class CourseCreateSerializer(serializers.ModelSerializer):
+    tags = serializers.ListSerializer(child=TagSerializer(), required=False)
+
+    instructors = PersonGetOrCreateSerializer(many=True, required=False)
+    time_plans = TimePlanSerializer(many=True, required=False)
+
+    image = serializers.SerializerMethodField(required = False)
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'slug',
+            'description',
+            'tags',
+            'start_date',
+            'end_date',
+            'registration_start_at',
+            'registration_deadline',
+            'capacity',
+            'registered',
+            'location',
+            'price',
+            'organizer',
+            'image',
+            'instructors',
+            'time_plans'
+        ]
     def create(self, validated_data):
         time_plans = validated_data.pop('time_plans')
-        course = Course.objcts.create(**validated_data)
-        if time_plans:
-            serializer = TimePlanSerializer(data = time_plans, many=True)
-            if serializer.is_valid():
-                serializer.save()
-                course.time_plans.set(serializer.data)
-            else:
-                raise serializers.ValidationError(serializer.errors)
-        return course   
+        tags = validated_data.pop('tags')
+        instructors = validated_data.pop('instructors')
+
+        with transaction.atomic():
+            course = Course.objects.create(**validated_data)
+            if time_plans:
+                time_plans_serializer = TimePlanSerializer(data = time_plans, many=True)
+                time_plans_serializer.is_valid(raise_exception=True)
+                time_plans = time_plans_serializer.save()
+
+                course.time_plans.set(time_plans)
+
+            if tags:
+                serializer_tags = TagSerializer(data = tags, many=True)
+                serializer_tags.is_valid(raise_exception=True)
+                tags = serializer_tags.save()
+
+                course.tags.set(tags)
+
+            if instructors:
+                instructors_serializer = PersonGetOrCreateSerializer(data=instructors, many=True)
+                instructors_serializer.is_valid(raise_exception = True)
+                instructors = instructors_serializer.save()
+
+                course.instructors.set(instructors)
+
+        return course

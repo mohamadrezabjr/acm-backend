@@ -6,6 +6,7 @@ urlpatterns = [
     path('events/<str:slug>/', events_views.EventRetrieveAPIView.as_view(), name = 'event_detail'),
     path('events/registration/<str:slug>/', events_views.EventRegistration.as_view(), name = 'event_registration'),
     path('courses/', courses_views.CourseListAPIView.as_view(), name= 'courses_list'),
+    path('courses/create/', courses_views.CourseCreateAPIView.as_view(), name = 'course_create'),
     path('courses/<str:slug>/', courses_views.CourseRetrieveAPIView.as_view(), name = 'course_detail'),
     path('persons/', general_views.PersonListAPIView.as_view(), name= 'persons_list'),
     path('tags/', general_views.TagListAPIView.as_view(), name = 'tags_list'),
