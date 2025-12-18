@@ -18,7 +18,7 @@ class TimePlan(models.Model):
     weekday = models.CharField(max_length=10, choices=WeekDays.choices)
     time_start = models.TimeField()
     time_end = models.TimeField(null=True, blank=True)
-    course = models.ForeignKey("main_app.Course", on_delete=models.CASCADE, related_name="time_plans")
+    course = models.ForeignKey("main_app.Course", on_delete=models.CASCADE, related_name="time_plans", null = True, blank=True)
 
 class Course(models.Model):
     title = models.CharField(max_length=256)
