@@ -1,6 +1,11 @@
 from django.db import models
 from django.utils import timezone
 import uuid
+from abc import abstractmethod
+from auth_app.models import Person
+from registration_app.services import FreeRegistration
+from django.db import transaction
+
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True, db_index=True)
 
@@ -20,7 +25,7 @@ class TimePlan(models.Model):
     time_end = models.TimeField(null=True, blank=True)
     course = models.ForeignKey("main_app.Course", on_delete=models.CASCADE, related_name="time_plans", null = True, blank=True)
 
-class Course(models.Model):
+class Activity(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField(blank=True, null = True)
     slug = models.CharField(
@@ -30,6 +35,19 @@ class Course(models.Model):
         null=True,
         blank=True
     )
+    participants = models.ManyToManyField(Person, related_name="registered_%(class)s", blank=True)
+
+    class Meta:
+        abstract = True
+
+    @abstractmethod
+    def add_person(self, person:Person):
+        raise NotImplementedError
+    @abstractmethod
+    def get_registration_class(self):
+        raise NotImplementedError
+
+class Course(Activity):
     tags = models.ManyToManyField(Tag, related_name='courses', blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -47,21 +65,34 @@ class Course(models.Model):
         blank = True,
     )
 
+    def add_person(self, person:Person):
+        with transaction.atomic():
+            course = self.__class__.objects.select_for_update().get(id = self.id)
+
+            if course.participants.filter(id = person.id).exists():
+                return {'detail' : 'You already registered to this course', "status" : 422}
+            if course.registration_deadline < timezone.now():
+                return {"detail" : "Registration time is over", "status":403}
+            if course.registered >= course.capacity:
+                return {"detail" : "Capacity is full", "status":409}
+
+            course.participants.add(person)
+            course.registered += 1
+            course.save()
+
+        return {"message" : "Course successfully added to your account", "status" : 201}
+    def get_registration_class(self):
+        if self.price == 0:
+            return FreeRegistration(self)
+        return None
+
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"
         super().save(*args, **kwargs)
 
-class Event(models.Model):
-    title = models.CharField(max_length=256)
-    description = models.TextField(blank=True, null = True)
-    slug = models.CharField(
-        max_length=256,
-        unique=True,
-        db_index=True,
-        null=True,
-        blank=True
-    )
+class Event(Activity):
     tags = models.ManyToManyField(Tag, related_name='events', blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -78,6 +109,29 @@ class Event(models.Model):
         related_name='events_as_speaker',
         blank = True,
     )
+
+    def add_person(self, person:Person):
+        with transaction.atomic():
+            event = self.__class__.objects.select_for_update().get(id = self.id)
+
+            if event.participants.filter(id = person.id).exists():
+                return {'detail' : 'You already registered to this event', "status" : 422}
+            if event.registration_deadline < timezone.now():
+                return {"detail" : "Registration time is over", "status":403}
+            if event.registered >= event.capacity:
+                return {"detail" : "Capacity is full", "status":409}
+
+            event.participants.add(person)
+            event.registered += 1
+            event.save()
+
+        return {"message" : "Event successfully added to your account", "status" : 201}
+
+    def get_registration_class(self):
+        if self.price == 0:
+            return FreeRegistration(self)
+        return None
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"

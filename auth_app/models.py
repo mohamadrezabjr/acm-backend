@@ -42,16 +42,6 @@ class Person(models.Model):
     last_name = models.CharField(max_length=128, null=True, blank=True)
     position = models.CharField(max_length=64, null=True, blank = True)
     bio = models.TextField(null = True, blank=True)
-    registered_events = models.ManyToManyField(
-        'main_app.Event',
-            related_name='participants',
-            blank = True
-    )
-    registered_courses = models.ManyToManyField(
-        'main_app.Course',
-        related_name='participants',
-        blank = True
-    )
     student_id = models.CharField(max_length=10, blank = True, null= True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
