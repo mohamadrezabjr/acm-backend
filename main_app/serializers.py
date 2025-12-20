@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.db import transaction
-
 from auth_app.models import Person
 from main_app.models import Event, Tag, Course, TimePlan
 from auth_app.serializers import PersonSerializer, PersonGetOrCreateSerializer
