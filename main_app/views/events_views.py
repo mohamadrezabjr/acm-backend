@@ -11,6 +11,7 @@ from main_app.permissions import IsCreator, IsAdmin, IsSuperUser
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from registration_app.services import RegistrationResultType
 
 class EventListAPIView(ListAPIView):
     serializer_class = EventListSerializer
@@ -55,18 +56,12 @@ class EventRegistration(APIView):
         user = request.user
 
         event = get_object_or_404(Event, slug=slug)
+        registration_class = event.get_registration_class()
+        result = registration_class.register(user.person)
 
-        if event.price != 0 :
-            return Response({"detail" : "payment was not successful"}, status=402) #No payment for now
-        if event.registration_deadline < timezone.now():
-            return Response({"detail" : "Registration time is over"}, status=403)
-        if event.registered >= event.capacity:
-            return Response({"detail" : "Capacity is full"}, status=409)
-        if event in user.person.registered_events.all():
-            return Response({'detail' : 'You already registered to this event'}, status = 422)
-        with transaction.atomic():
-            user.person.registered_events.add(event)
-            event.registered += 1
-            event.save()
-
-        return Response({"message" : "Event successfully added to your account"}, status=201)
+        if result.result_type == RegistrationResultType.PAYMENT_REQUIRED:
+            return Response(
+                {"payment_url": result.payment_url},
+                status=202
+            )
+        return Response({"detail" : result.response.get('detail')}, status = result.response.get('status'))
