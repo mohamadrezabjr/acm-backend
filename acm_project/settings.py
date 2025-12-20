@@ -68,7 +68,8 @@ INSTALLED_APPS = [
 
     'main_app',
     'auth_app',
-    'profile_app'
+    'profile_app',
+    'registration_app',
 ]
 
 MIDDLEWARE = [
@@ -167,6 +168,15 @@ if ENVIRONMENT == 'development':
             "rest_framework_simplejwt.authentication.JWTAuthentication",
             "rest_framework.authentication.SessionAuthentication",
         )
+    }
+
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INTERNAL_IPS = ["127.0.0.1"]
+    DEBUG_TOOLBAR_CONFIG = {
+        "ENABLE_PANELS": [
+            "debug_toolbar.panels.sql.SQLPanel",
+        ],
     }
 
 # Internationalization

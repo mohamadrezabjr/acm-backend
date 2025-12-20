@@ -7,6 +7,6 @@ class RegisteredEventsListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         user = self.request.user
-        queryset = user.person.registered_events.all()
+        queryset = user.person.registered_events.prefetch_related('tags', 'speakers').all()
         return queryset
 
