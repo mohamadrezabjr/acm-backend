@@ -101,6 +101,8 @@ class Course(Activity):
                     return {"detail" : "Registration time is over", "status":410}
                 registered = course.participants.count()
                 if registered >= course.capacity:
+                    course.registered = registered
+                    course.save()
                     return {"detail" : "Capacity is full", "status":409}
 
                 CourseParticipant.objects.create(
@@ -108,7 +110,7 @@ class Course(Activity):
                     person=person
                 )
                 course.registered = registered + 1
-
+                course.save()
             return {"message" : "Course successfully added to your account", "status" : 201}
         except IntegrityError:
             return {'detail': 'You already registered to this course', "status": 422}
@@ -153,6 +155,8 @@ class Event(Activity):
                     return {"detail" : "Registration time is over", "status":403}
                 registered = event.participants.count()
                 if registered >= event.capacity:
+                    event.registered = registered
+                    event.save()
                     return {"detail" : "Capacity is full", "status":409}
 
                 EventParticipant.objects.create(
