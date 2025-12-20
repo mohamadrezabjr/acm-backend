@@ -1,7 +1,8 @@
 import json
+from functools import partial
 
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -66,3 +67,40 @@ class CourseRegistration(APIView):
                 status=202
             )
         return Response({"detail" : result.response.get('detail')}, status = result.response.get('status'))
+
+class CourseUpdateAPIView(UpdateAPIView):
+    queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
+    serializer_class = CourseCreateSerializer
+    permission_classes = [IsAuthenticated, IsAdmin|IsCreator]
+    lookup_field = 'slug'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        raw_payload = request.data.get('data')
+
+        if not raw_payload:
+            return Response(
+                {'error' : 'data field is required'},
+                status=400
+            )
+        data = json.loads(raw_payload)
+
+        serializer = self.get_serializer(
+            instance = instance,
+            data =data,
+            partial = True
+        )
+        serializer.is_valid(raise_exception = True)
+        course = serializer.save()
+        course.registered = course.participants.count()
+        course.save(update_fields=['registered'])
+
+        image = request.FILES.get('image')
+
+        if image:
+            course.image = image
+            course.save(update_fields=['image'])
+
+        return Response(serializer.data, status=200)
+

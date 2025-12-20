@@ -116,13 +116,16 @@ class EventListSerializer(serializers.ModelSerializer):
         ]
 
 class TimePlanSerializer(serializers.ModelSerializer):
+    pk = serializers.IntegerField(required=False, allow_null=True)
     class Meta:
         model = TimePlan
         fields = [
+            'pk',
             'weekday',
             'time_start',
             'time_end',
         ]
+
 class CourseListSerializer(serializers.ModelSerializer):
     tags = serializers.SlugRelatedField(
         many=True,
@@ -199,6 +202,37 @@ class CourseCreateSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             course = Course.objects.create(**validated_data)
             if time_plans:
+                time_plans_serializer = TimePlanSerializer(data = time_plans, many=True)
+                time_plans_serializer.is_valid(raise_exception=True)
+                time_plans = time_plans_serializer.save()
+
+                course.time_plans.set(time_plans)
+
+            if tags:
+                serializer_tags = TagSerializer(data = tags, many=True)
+                serializer_tags.is_valid(raise_exception=True)
+                tags = serializer_tags.save()
+
+                course.tags.set(tags)
+
+            if instructors:
+                instructors_serializer = PersonGetOrCreateSerializer(data=instructors, many=True)
+                instructors_serializer.is_valid(raise_exception = True)
+                instructors = instructors_serializer.save()
+
+                course.instructors.set(instructors)
+
+        return course
+    def update(self, instance, validated_data):
+        time_plans = validated_data.pop('time_plans')
+        tags = validated_data.pop('tags')
+        instructors = validated_data.pop('instructors')
+
+        with transaction.atomic():
+            course = Course.objects.select_for_update().get(id=instance.id)
+            if time_plans:
+                TimePlan.objects.filter(course=course).delete()
+
                 time_plans_serializer = TimePlanSerializer(data = time_plans, many=True)
                 time_plans_serializer.is_valid(raise_exception=True)
                 time_plans = time_plans_serializer.save()
