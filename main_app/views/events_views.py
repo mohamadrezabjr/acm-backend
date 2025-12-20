@@ -1,7 +1,6 @@
 import json
 
-from django.utils import timezone
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -65,3 +64,37 @@ class EventRegistration(APIView):
                 status=202
             )
         return Response({"detail" : result.response.get('detail')}, status = result.response.get('status'))
+
+class EventUpdateAPIView(UpdateAPIView):
+    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
+    serializer_class = EventCreateSerializer
+    permission_classes = [IsAuthenticated,IsCreator|IsAdmin]
+    lookup_field = 'slug'
+
+    def update(self, request, *args, **kwargs):
+        event = self.get_object()
+
+        payload_raw = request.data.get('data')
+        if not payload_raw:
+            return Response(
+                {"error": "data field is required"},
+                status=400
+            )
+
+        payload = json.loads(payload_raw)
+        serializer = self.get_serializer(
+            event,
+            data = payload,
+            partial = True
+        )
+        serializer.is_valid(raise_exception=True)
+        event = serializer.save()
+        event.registered = event.participants.count()
+        event.save(update_fields=['registered'])
+
+        image = request.FILES.get('image')
+        if image:
+            event.image = image
+            event.save(update_fields=['image'])
+
+        return Response(serializer.data, status=200)

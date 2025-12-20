@@ -43,10 +43,29 @@ class EventCreateSerializer(serializers.ModelSerializer):
             'speakers'
         ]
     def create(self, validated_data):
-        speakers = validated_data.pop('speakers')
-        tags = validated_data.pop("tags")
+        speakers = validated_data.pop('speakers', None)
+        tags = validated_data.pop("tags", None)
         with transaction.atomic():
             event = Event.objects.create(**validated_data)
+            if tags:
+                serializer_tags = TagSerializer(data=tags, many=True)
+                serializer_tags.is_valid(raise_exception=True)
+                tags = serializer_tags.save()
+
+                event.tags.set(tags)
+            if speakers:
+                speakers_serializer = PersonGetOrCreateSerializer(data=speakers, many=True)
+                speakers_serializer.is_valid(raise_exception=True)
+                speakers = speakers_serializer.save()
+
+                event.speakers.set(speakers)
+        return event
+    def update(self, instance, validated_data):
+        speakers = validated_data.pop('speakers', None)
+        tags = validated_data.pop("tags", None)
+        with transaction.atomic():
+            event = Event.objects.select_for_update().get(id=instance.id)
+            event = super().update(event, validated_data)
             if tags:
                 serializer_tags = TagSerializer(data=tags, many=True)
                 serializer_tags.is_valid(raise_exception=True)
