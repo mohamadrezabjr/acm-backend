@@ -13,4 +13,6 @@ urlpatterns = [
     path('courses/registration/<str:slug>/', courses_views.CourseRegistration.as_view(),name = "course_registration"),
     path('persons/', general_views.PersonListAPIView.as_view(), name= 'persons_list'),
     path('tags/', general_views.TagListAPIView.as_view(), name = 'tags_list'),
+    path('admin/dashboard-stats/', general_views.AdminDashboardStatus.as_view(), name = 'admin_dashboard_status')
+
 ]
