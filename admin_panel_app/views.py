@@ -29,14 +29,3 @@ class AdminDashboardStatus(APIView):
 
         serializer = AnalyticsSerializer(analytics)
         return Response(serializer.data, status = 200)
-
-class AdminEventsListAPIView(ListAPIView):
-    serializer_class = EventListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
-    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
-
-class AdminCourseListAPIView(ListAPIView):
-    serializer_class = CourseListSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
-    queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
-

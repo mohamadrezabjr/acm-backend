@@ -16,13 +16,24 @@ from registration_app.services import RegistrationResultType
 
 class CourseListAPIView(ListAPIView):
     serializer_class = CourseListSerializer
-    queryset = Course.objects.filter(is_active=True).prefetch_related('tags', 'instructors', 'time_plans')
+    queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_admin or self.request.user.is_superuser:
+            return qs
+        return qs.filter(is_active= True)
 
 class CourseRetrieveAPIView(RetrieveAPIView):
     serializer_class = CourseListSerializer
-    queryset = Course.objects.filter(is_active=True).prefetch_related('tags', 'instructors', 'time_plans')
+    queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
     lookup_field = 'slug'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_admin or self.request.user.is_superuser:
+            return qs
+        return qs.filter(is_active= True)
 class CourseCreateAPIView(CreateAPIView):
     serializer_class = CourseCreateSerializer
     queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
