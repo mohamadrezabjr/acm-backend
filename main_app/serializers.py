@@ -97,7 +97,8 @@ class EventListSerializer(serializers.ModelSerializer):
         return None
     class Meta:
         model = Event
-        fields = [
+        fields =[
+            'id',
             'title',
             'slug',
             'description',
@@ -144,6 +145,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
+            'id',
             'title',
             'slug',
             'description',

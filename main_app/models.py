@@ -145,7 +145,6 @@ class Event(Activity):
     )
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_events', through='EventParticipant')
 
-
     def add_person(self, person:Person):
         try:
             with transaction.atomic():
