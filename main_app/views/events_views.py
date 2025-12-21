@@ -14,11 +14,11 @@ from registration_app.services import RegistrationResultType
 
 class EventListAPIView(ListAPIView):
     serializer_class = EventListSerializer
-    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
+    queryset = Event.objects.filter(is_active = True).prefetch_related('tags', 'speakers')
 
 class EventRetrieveAPIView(RetrieveAPIView):
     serializer_class = EventListSerializer
-    queryset = Event.objects.all().prefetch_related('tags', 'speakers')
+    queryset = Event.objects.filter(is_active = True).prefetch_related('tags', 'speakers')
     lookup_field = 'slug'
     
 class EventCreateAPIView(CreateAPIView):
