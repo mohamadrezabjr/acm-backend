@@ -91,6 +91,7 @@ class Course(Activity):
         blank = True,
     )
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_courses', through='CourseParticipant')
+    is_active = models.BooleanField(default=True)
 
     def add_person(self, person:Person):
         try:
@@ -144,6 +145,7 @@ class Event(Activity):
         blank = True,
     )
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_events', through='EventParticipant')
+    is_active = models.BooleanField(default=True)
 
     def add_person(self, person:Person):
         try:

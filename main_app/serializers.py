@@ -113,7 +113,8 @@ class EventListSerializer(serializers.ModelSerializer):
             'price',
             'organizer',
             'image',
-            'speakers'
+            'speakers',
+            'is_active',
         ]
 
 class TimePlanSerializer(serializers.ModelSerializer):
@@ -161,7 +162,8 @@ class CourseListSerializer(serializers.ModelSerializer):
             'organizer',
             'image',
             'instructors',
-            'time_plans'
+            'time_plans',
+            'is_active',
         ]
 
 class CourseCreateSerializer(serializers.ModelSerializer):
