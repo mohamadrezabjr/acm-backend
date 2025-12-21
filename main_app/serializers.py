@@ -230,6 +230,8 @@ class CourseCreateSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             course = Course.objects.select_for_update().get(id=instance.id)
+            course = super().update(course, validated_data)
+
             if time_plans:
                 TimePlan.objects.filter(course=course).delete()
 
