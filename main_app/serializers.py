@@ -90,6 +90,20 @@ class EventListSerializer(serializers.ModelSerializer):
     speakers = PersonGetOrCreateSerializer(many=True, required=False)
 
     image = serializers.SerializerMethodField(required = False)
+    dependencies = serializers.ListSerializer(
+        child=serializers.CharField(),
+        required=False,
+        allow_null=True,
+        allow_empty=True
+    )
+
+    def validate_dependencies(self, value):
+        person_fields = {f for f in Person._meta.fields}
+        invalid = set(value) - person_fields
+        if invalid:
+            raise serializers.ValidationError(
+                f"Invalid user fields: {', '.join(invalid)}"
+            )
 
     def get_image(self, obj):
         if obj.image:
@@ -115,6 +129,7 @@ class EventListSerializer(serializers.ModelSerializer):
             'image',
             'speakers',
             'is_active',
+            'dependencies'
         ]
 
 class TimePlanSerializer(serializers.ModelSerializer):

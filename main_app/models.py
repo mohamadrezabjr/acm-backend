@@ -2,6 +2,7 @@ from django.db import models, IntegrityError
 from django.utils import timezone
 import uuid
 from abc import abstractmethod
+from rest_framework.exceptions import ValidationError
 from auth_app.models import Person
 from registration_app.services import FreeRegistration
 from django.db import transaction
@@ -94,17 +95,26 @@ class Course(Activity):
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
 
+    def clean(self):
+        person_fields = {f for f in Person._meta.get_fields()}
+        invalid = set(self.dependencies) - person_fields
+        if invalid:
+            raise ValidationError({
+                "dependencies": f"Invalid User fields: {', '.join(invalid)}"
+            })
+
     def add_person(self, person:Person):
         try:
             with transaction.atomic():
                 course = self.__class__.objects.select_for_update().get(id = self.id)
-
+                if not Course.is_active:
+                    return {'detail' : 'Course not found', 'status' : 404}
                 if course.registration_deadline < timezone.now():
                     return {"detail" : "Registration time is over", "status":410}
                 registered = course.participants.count()
                 if registered >= course.capacity:
                     course.registered = registered
-                    course.save()
+                    course.save(update_fields=['registered'])
                     return {"detail" : "Capacity is full", "status":409}
 
                 CourseParticipant.objects.create(
@@ -112,7 +122,7 @@ class Course(Activity):
                     person=person
                 )
                 course.registered = registered + 1
-                course.save()
+                course.save(update_fields=['registered'])
             return {"message" : "Course successfully added to your account", "status" : 201}
         except IntegrityError:
             return {'detail': 'You already registered to this course', "status": 422}
@@ -149,17 +159,28 @@ class Event(Activity):
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
 
+    def clean(self):
+        person_fields = {f for f in Person._meta.get_fields()}
+        invalid = set(self.dependencies) - person_fields
+        if invalid:
+            raise ValidationError({
+                "dependencies": f"Invalid User fields: {', '.join(invalid)}"
+            })
+
     def add_person(self, person:Person):
         try:
             with transaction.atomic():
                 event = self.__class__.objects.select_for_update().get(id = self.id)
+
+                if not event.is_active:
+                    return {'detail' : 'Event not found', 'status' : 404}
 
                 if event.registration_deadline < timezone.now():
                     return {"detail" : "Registration time is over", "status":403}
                 registered = event.participants.count()
                 if registered >= event.capacity:
                     event.registered = registered
-                    event.save()
+                    event.save(update_fields=['registered'])
                     return {"detail" : "Capacity is full", "status":409}
 
                 EventParticipant.objects.create(
@@ -167,7 +188,7 @@ class Event(Activity):
                     person = person
                 )
                 event.registered = registered + 1
-                event.save()
+                event.save(update_fields=['registered'])
 
             return {"message" : "Event successfully added to your account", "status" : 201}
         except IntegrityError:
