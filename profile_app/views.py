@@ -35,9 +35,9 @@ class ProfileUpdateAPIView(APIView):
         serializer.is_valid(raise_exception = True)
         person = serializer.save()
 
-        image = request.FILES.get('image')
-        if image:
-            person.avatar = image
+        avatar = request.FILES.get('avatar')
+        if avatar:
+            person.avatar = avatar
             person.save(update_fields=['avatar'])
 
         return Response(serializer.data, status = 200)
