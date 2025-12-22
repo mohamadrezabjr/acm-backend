@@ -33,8 +33,9 @@ class CourseRetrieveAPIView(RetrieveAPIView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if self.request.user.is_admin or self.request.user.is_superuser:
-            return qs
+        if self.request.user.is_authenticated:
+            if self.request.user.is_admin or self.request.user.is_superuser:
+                return qs
         return qs.filter(is_active= True)
 class CourseCreateAPIView(CreateAPIView):
     serializer_class = CourseCreateSerializer
