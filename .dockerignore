@@ -1,0 +1,17 @@
+# Python
+venv
+__pycache__
+*.pyc
+*.pyo
+
+# Django
+media
+staticfiles
+
+# Env & git
+.env
+.git
+.gitignore
+
+# OS
+.DS_Store
