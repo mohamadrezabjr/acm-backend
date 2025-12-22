@@ -39,6 +39,7 @@ class AuthMeSerializer(serializers.ModelSerializer):
     student_id =serializers.SerializerMethodField()
     avatar = serializers.SerializerMethodField()
     person_id = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
 
     def get_first_name(self, obj):
         return obj.person.first_name
@@ -56,6 +57,8 @@ class AuthMeSerializer(serializers.ModelSerializer):
         if obj.person:
             return obj.person.id
         return None
+    def get_email(self, obj):
+        return obj.person.email
 
     class Meta:
         model = User
