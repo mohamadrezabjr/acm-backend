@@ -90,6 +90,20 @@ class EventListSerializer(serializers.ModelSerializer):
     speakers = PersonGetOrCreateSerializer(many=True, required=False)
 
     image = serializers.SerializerMethodField(required = False)
+    dependencies = serializers.ListSerializer(
+        child=serializers.CharField(),
+        required=False,
+        allow_null=True,
+        allow_empty=True
+    )
+
+    def validate_dependencies(self, value):
+        person_fields = {f for f in Person._meta.fields}
+        invalid = set(value) - person_fields
+        if invalid:
+            raise serializers.ValidationError(
+                f"Invalid user fields: {', '.join(invalid)}"
+            )
 
     def get_image(self, obj):
         if obj.image:
@@ -97,7 +111,8 @@ class EventListSerializer(serializers.ModelSerializer):
         return None
     class Meta:
         model = Event
-        fields = [
+        fields =[
+            'id',
             'title',
             'slug',
             'description',
@@ -112,7 +127,9 @@ class EventListSerializer(serializers.ModelSerializer):
             'price',
             'organizer',
             'image',
-            'speakers'
+            'speakers',
+            'is_active',
+            'dependencies'
         ]
 
 class TimePlanSerializer(serializers.ModelSerializer):
@@ -144,6 +161,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
+            'id',
             'title',
             'slug',
             'description',
@@ -159,7 +177,8 @@ class CourseListSerializer(serializers.ModelSerializer):
             'organizer',
             'image',
             'instructors',
-            'time_plans'
+            'time_plans',
+            'is_active',
         ]
 
 class CourseCreateSerializer(serializers.ModelSerializer):
@@ -230,6 +249,8 @@ class CourseCreateSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             course = Course.objects.select_for_update().get(id=instance.id)
+            course = super().update(course, validated_data)
+
             if time_plans:
                 TimePlan.objects.filter(course=course).delete()
 

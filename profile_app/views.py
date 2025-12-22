@@ -1,5 +1,11 @@
+import json
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from auth_app.models import Person
 from main_app.serializers import EventListSerializer
+from auth_app.serializers import PersonSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class RegisteredEventsListAPIView(generics.ListAPIView):
@@ -10,3 +16,28 @@ class RegisteredEventsListAPIView(generics.ListAPIView):
         queryset = user.person.registered_events.prefetch_related('tags', 'speakers').all()
         return queryset
 
+class ProfileUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+    def put(self, request):
+        current_person = request.user.person
+
+        raw_payload = request.data.get('data')
+        if not raw_payload:
+            return Response(
+                {'error': 'data field is required'},
+                status=400
+            )
+
+        data = json.loads(raw_payload)
+        serializer = PersonSerializer(instance = current_person,data = data)
+        serializer.is_valid(raise_exception = True)
+        person = serializer.save()
+
+        image = request.FILES.get('image')
+        if image:
+            person.avatar = image
+            person.save(update_fields=['avatar'])
+
+        return Response(serializer.data, status = 200)

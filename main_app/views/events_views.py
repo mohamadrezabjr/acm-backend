@@ -16,11 +16,21 @@ class EventListAPIView(ListAPIView):
     serializer_class = EventListSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_admin or self.request.user.is_superuser:
+            return qs
+        return qs.filter(is_active= True)
 class EventRetrieveAPIView(RetrieveAPIView):
     serializer_class = EventListSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
     lookup_field = 'slug'
-    
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_admin or self.request.user.is_superuser:
+            return qs
+        return qs.filter(is_active= True)
 class EventCreateAPIView(CreateAPIView):
     serializer_class = EventCreateSerializer
     queryset = Event.objects.all().prefetch_related('tags', 'speakers')
