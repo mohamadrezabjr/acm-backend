@@ -2,6 +2,7 @@ import json
 from functools import partial
 
 from django.shortcuts import get_object_or_404
+from django.template.context_processors import request
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -20,8 +21,9 @@ class CourseListAPIView(ListAPIView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if self.request.user.is_admin or self.request.user.is_superuser:
-            return qs
+        if self.request.user.is_authenticated:
+            if self.request.user.is_admin or self.request.user.is_superuser:
+                return qs
         return qs.filter(is_active= True)
 
 class CourseRetrieveAPIView(RetrieveAPIView):
