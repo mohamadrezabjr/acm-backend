@@ -96,7 +96,7 @@ class Course(Activity):
     dependencies = models.JSONField(default=list, blank=True, null=True)
 
     def clean(self):
-        person_fields = {f for f in Person._meta.get_fields()}
+        person_fields = {f.name for f in Person._meta.get_fields()}
         invalid = set(self.dependencies) - person_fields
         if invalid:
             raise ValidationError({
@@ -160,7 +160,7 @@ class Event(Activity):
     dependencies = models.JSONField(default=list, blank=True, null=True)
 
     def clean(self):
-        person_fields = {f for f in Person._meta.get_fields()}
+        person_fields = {f.name for f in Person._meta.get_fields()}
         invalid = set(self.dependencies) - person_fields
         if invalid:
             raise ValidationError({
