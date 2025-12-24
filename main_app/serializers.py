@@ -179,6 +179,7 @@ class CourseListSerializer(serializers.ModelSerializer):
             'instructors',
             'time_plans',
             'is_active',
+            'dependencies',
         ]
 
 class CourseCreateSerializer(serializers.ModelSerializer):
