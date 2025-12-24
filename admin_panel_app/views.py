@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -29,3 +30,14 @@ class AdminDashboardStatus(APIView):
 
         serializer = AnalyticsSerializer(analytics)
         return Response(serializer.data, status = 200)
+
+class DeactivateEvent(APIView):
+    permission_classes =  [IsAuthenticated, IsAdmin]
+
+    def post(self, request, slug):
+        event = get_object_or_404(Event, slug=slug)
+
+        event.is_active = not event.is_active
+        event.save(update_fields=['is_active'])
+
+        return Response({"detail" : 'event status changed'}, status = 201)
