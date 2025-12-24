@@ -8,6 +8,7 @@ from main_app.serializers import EventListSerializer, CourseListSerializer
 from auth_app.models import User
 from rest_framework.response import Response
 from main_app.permissions import IsAdmin, IsCreator
+from django.db import transaction
 
 class AdminDashboardStatus(APIView):
     permission_classes = [IsAuthenticated, IsAdmin | IsCreator]
@@ -34,10 +35,23 @@ class AdminDashboardStatus(APIView):
 class DeactivateEvent(APIView):
     permission_classes =  [IsAuthenticated, IsAdmin]
 
+    @transaction.atomic
     def post(self, request, slug):
-        event = get_object_or_404(Event, slug=slug)
+        event = get_object_or_404(Event.objects.select_for_update(), slug=slug)
 
         event.is_active = not event.is_active
         event.save(update_fields=['is_active'])
 
         return Response({"detail" : 'event status changed'}, status = 201)
+
+class DeactivateCourse(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    @transaction.atomic
+    def post(self, request, slug):
+        course = get_object_or_404(Course.objects.select_for_update(), slug=slug)
+
+        course.is_active = not course.is_active
+        course.save(update_fields=['is_active'])
+
+        return Response({"detail": 'course status changed'}, status=201)
