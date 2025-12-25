@@ -3,23 +3,22 @@ from auth_app.models import Person, User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .forms import UserCreationForm , UserChangeForm
 
-
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
     fieldsets = (
-        ("User Information", {"fields": ("phone", "password")}),
-        ("User Status", {"fields": ("is_superuser", "is_admin","is_creator", "groups", "user_permissions")}),
+        ("User Information", {"fields": ("phone", "email", "password")}),
+        ("User Status", {"fields": ("is_superuser", "is_admin", "is_creator", "groups", "user_permissions")}),
     )
 
     add_fieldsets = (
-        ("Create User", {"fields": ("phone", "password", "confirm_password")}),
+        ("Create User", {"fields": ("phone", "email", "password", "confirm_password")}),
     )
 
-    list_display = ["id", "phone", "is_superuser", "is_admin", "is_creator"]
+    list_display = ["id", "phone", "email", "is_superuser", "is_admin", "is_creator"]
     list_filter = ["is_superuser", "is_admin", "is_creator"]
-    search_fields = ["phone"]
+    search_fields = ["phone", "email"]
     ordering = ["-id"]
     filter_horizontal = ("groups", "user_permissions")
 
@@ -27,14 +26,15 @@ class UserAdmin(BaseUserAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if not request.user.is_superuser:
             fieldsets = (
-                ("User Status", {"fields": ("phone", "password", "is_superuser", "is_admin", "is_creator")}),
+                ("User Status", {
+                    "fields": ("phone", "email", "password", "is_superuser", "is_admin", "is_creator")
+                }),
             )
         return fieldsets
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        is_superuser = request.user.is_superuser
-        if not is_superuser:
+        if not request.user.is_superuser:
             form.base_fields["is_superuser"].disabled = True
             form.base_fields["is_admin"].disabled = True
             form.base_fields["is_creator"].disabled = True
@@ -45,7 +45,7 @@ class UserAdmin(BaseUserAdmin):
         super().save_model(request, obj, form, change)
 
         if is_created:
-            person = Person.objects.create(user = obj)
+            Person.objects.create(user=obj)
 
 
 admin.site.register(User, UserAdmin)

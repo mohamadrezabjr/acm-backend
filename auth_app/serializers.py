@@ -39,7 +39,6 @@ class AuthMeSerializer(serializers.ModelSerializer):
     student_id =serializers.SerializerMethodField()
     avatar = serializers.SerializerMethodField()
     person_id = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
 
     def get_first_name(self, obj):
         return obj.person.first_name
@@ -57,8 +56,6 @@ class AuthMeSerializer(serializers.ModelSerializer):
         if obj.person:
             return obj.person.id
         return None
-    def get_email(self, obj):
-        return obj.person.email
 
     class Meta:
         model = User
@@ -86,10 +83,15 @@ class UserRegistrationSerializer(serializers.Serializer):
         if User.objects.filter(phone = value).exists():
             raise serializers.ValidationError('user with this phone already exists')
         return value
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('user with this email already exists')
+        return value
     def create(self, validated_data):
         phone = validated_data.pop('phone')
         password = validated_data.pop('password')
-        user = User.objects.create(phone = phone)
+        email = validated_data.pop('email')
+        user = User.objects.create(phone = phone, email = email)
         user.set_password(password)
         user.save()
         person = Person.objects.create(user = user, **validated_data)
