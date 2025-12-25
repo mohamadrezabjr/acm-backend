@@ -40,7 +40,8 @@ class EventCreateSerializer(serializers.ModelSerializer):
             'price',
             'organizer',
             'image',
-            'speakers'
+            'speakers',
+            'dependencies'
         ]
     def create(self, validated_data):
         speakers = validated_data.pop('speakers', None)
@@ -212,7 +213,8 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             'organizer',
             'image',
             'instructors',
-            'time_plans'
+            'time_plans',
+            'dependencies'
         ]
     def create(self, validated_data):
         time_plans = validated_data.pop('time_plans')
