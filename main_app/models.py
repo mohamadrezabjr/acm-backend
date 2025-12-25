@@ -7,6 +7,17 @@ from auth_app.models import Person
 from registration_app.services import FreeRegistration
 from django.db import transaction
 
+def check_dependencies(person, dependencies):
+    dependency_table = {
+        'student_id' : person.student_id,
+        'first_name' : person.first_name,
+        'last_name' : person.last_name,
+    }
+    for dependency in dependencies:
+        if not dependency_table[dependency]:
+            return False
+    return True
+
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True, db_index=True)
 
@@ -116,7 +127,8 @@ class Course(Activity):
                     course.registered = registered
                     course.save(update_fields=['registered'])
                     return {"detail" : "Capacity is full", "status":409}
-
+                if not check_dependencies(person, self.dependencies):
+                    return {'detail' : 'Dependencies not satisfied', 'status':400}
                 CourseParticipant.objects.create(
                     course=course,
                     person=person
@@ -182,6 +194,8 @@ class Event(Activity):
                     event.registered = registered
                     event.save(update_fields=['registered'])
                     return {"detail" : "Capacity is full", "status":409}
+                if not check_dependencies(person, self.dependencies):
+                    return {'detail' : 'Dependencies not satisfied', 'status':400}
 
                 EventParticipant.objects.create(
                     event=event,
