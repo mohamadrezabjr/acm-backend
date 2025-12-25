@@ -123,7 +123,7 @@ class Course(Activity):
                 )
                 course.registered = registered + 1
                 course.save(update_fields=['registered'])
-            return {"message" : "Course successfully added to your account", "status" : 201}
+            return {"detail" : "Course successfully added to your account", "status" : 201}
         except IntegrityError:
             return {'detail': 'You already registered to this course', "status": 422}
 
@@ -190,7 +190,7 @@ class Event(Activity):
                 event.registered = registered + 1
                 event.save(update_fields=['registered'])
 
-            return {"message" : "Event successfully added to your account", "status" : 201}
+            return {"detail" : "Event successfully added to your account", "status" : 201}
         except IntegrityError:
             return {'detail': 'You already registered to this event', "status": 422}
 
