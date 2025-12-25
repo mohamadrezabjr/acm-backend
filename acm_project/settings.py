@@ -27,28 +27,57 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv('DJANGO_SECRET_KEY'))
 
 SERVER_IP = str(os.getenv('SERVER_IP'))
-ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
+ENVIRONMENT = os.getenv("ENVIRONMENT")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-if ENVIRONMENT == 'development':
+if ENVIRONMENT == "development":
     DEBUG = True
+
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
 
-else :
-    DEBUG = False
-    ALLOWED_HOSTS = ['*']
-    CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
 
+else:
+    DEBUG = False
+
+    ALLOWED_HOSTS = [
+        "5.200.200.200",
+        "demo.acmkhu.ir/",
+        "www.demo.acmkhu.ir/",
+    ]
+
+    # ---------- CORS ----------
+    CORS_ALLOW_CREDENTIALS = True
     CORS_ALLOW_ALL_ORIGINS = False
 
-    SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = False
+    CORS_ALLOWED_ORIGINS = [
+        "https://demo.acmkhu.ir/",
+        "https://www.demo.acmkhu.ir/",
+    ]
 
-    CSRF_COOKIE_SAMESITE = "Lax"
-    CSRF_COOKIE_SECURE = False
+    # ---------- CSRF ----------
+    CSRF_TRUSTED_ORIGINS = [
+        "https://demo.acmkhu.ir/",
+        "https://www.demo.acmkhu.ir/",
+        "https://5.200.200.200",
+    ]
+
+    # ---------- Cookies ----------
+    SESSION_COOKIE_SAMESITE = "None"
+    SESSION_COOKIE_SECURE = True
+
+    CSRF_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SECURE = True
+
+    # ---------- Proxy / Nginx ----------
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
+
 
 CORS_ALLOW_CREDENTIALS = True
 
