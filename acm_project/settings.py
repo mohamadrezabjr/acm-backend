@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv('DJANGO_SECRET_KEY'))
 
 SERVER_IP = str(os.getenv('SERVER_IP'))
-ENVIRONMENT = os.getenv("ENVIRONMENT")
+ENVIRONMENT = str(os.getenv("ENVIRONMENT"))
 
 if ENVIRONMENT == "development":
     DEBUG = True
@@ -47,8 +47,8 @@ else:
 
     ALLOWED_HOSTS = [
         "5.200.200.200",
-        "demo.acmkhu.ir/",
-        "www.demo.acmkhu.ir/",
+        "demo.acmkhu.ir",
+        "www.demo.acmkhu.ir",
     ]
 
     # ---------- CORS ----------
@@ -56,14 +56,14 @@ else:
     CORS_ALLOW_ALL_ORIGINS = False
 
     CORS_ALLOWED_ORIGINS = [
-        "https://demo.acmkhu.ir/",
-        "https://www.demo.acmkhu.ir/",
+        "https://demo.acmkhu.ir",
+        "https://www.demo.acmkhu.ir",
     ]
 
     # ---------- CSRF ----------
     CSRF_TRUSTED_ORIGINS = [
-        "https://demo.acmkhu.ir/",
-        "https://www.demo.acmkhu.ir/",
+        "https://demo.acmkhu.ir",
+        "https://www.demo.acmkhu.ir",
         "https://5.200.200.200",
     ]
 
