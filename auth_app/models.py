@@ -46,4 +46,4 @@ class Person(models.Model):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} : {self.student_id}"
+        return f"{self.first_name} {self.last_name} : {self.user}"

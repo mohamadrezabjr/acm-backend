@@ -59,6 +59,9 @@ class Activity(models.Model):
     def get_registration_class(self):
         raise NotImplementedError
 
+    def __str__(self):
+        return self.title
+
 class EventParticipant(models.Model):
     event = models.ForeignKey('main_app.Event', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -71,7 +74,8 @@ class EventParticipant(models.Model):
                 name="unique_event_person"
             )
         ]
-
+    def __str__(self):
+        return f'{self.event} --- {self.person}'
 class CourseParticipant(models.Model):
     course = models.ForeignKey('main_app.Course', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -84,6 +88,9 @@ class CourseParticipant(models.Model):
                 name="unique_course_person"
             )
         ]
+
+    def __str__(self):
+        return f'{self.course} --- {self.person}'
 
 class Course(Activity):
     tags = models.ManyToManyField(Tag, related_name='courses', blank=True)
@@ -105,6 +112,7 @@ class Course(Activity):
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_courses', through='CourseParticipant')
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
+    is_full = models.BooleanField(default=False)
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
@@ -148,6 +156,8 @@ class Course(Activity):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        if self.registered >= self.capacity:
+            self.is_full = True
         super().save(*args, **kwargs)
 
 class Event(Activity):
@@ -170,6 +180,7 @@ class Event(Activity):
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_events', through='EventParticipant')
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
+    is_full = models.BooleanField(default=False)
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
@@ -216,4 +227,6 @@ class Event(Activity):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        if self.registered >= self.capacity:
+            self.is_full = True
         super().save(*args, **kwargs)
