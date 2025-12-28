@@ -1,76 +1,7 @@
 from rest_framework import serializers
 from auth_app.serializers import PersonGetOrCreateSerializer
-from main_app.models import Event
-from main_app.serializers.general_serializers import TagSerializer
-from django.db import transaction
+from main_app.models import Event, Tag
 from auth_app.models import Person
-
-class EventCreateSerializer(serializers.ModelSerializer):
-    tags = serializers.ListSerializer(child=TagSerializer(), required=False)
-    speakers = PersonGetOrCreateSerializer(many=True, required=False)
-    image = serializers.SerializerMethodField(required = False)
-
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
-    class Meta:
-        model = Event
-        fields = [
-            'title',
-            'slug',
-            'description',
-            'tags',
-            'start_date',
-            'end_date',
-            'registration_start_at',
-            'registration_deadline',
-            'capacity',
-            'registered',
-            'location',
-            'price',
-            'organizer',
-            'image',
-            'speakers',
-            'dependencies'
-        ]
-    def create(self, validated_data):
-        speakers = validated_data.pop('speakers', None)
-        tags = validated_data.pop("tags", None)
-        with transaction.atomic():
-            event = Event.objects.create(**validated_data)
-            if tags:
-                serializer_tags = TagSerializer(data=tags, many=True)
-                serializer_tags.is_valid(raise_exception=True)
-                tags = serializer_tags.save()
-
-                event.tags.set(tags)
-            if speakers:
-                speakers_serializer = PersonGetOrCreateSerializer(data=speakers, many=True)
-                speakers_serializer.is_valid(raise_exception=True)
-                speakers = speakers_serializer.save()
-
-                event.speakers.set(speakers)
-        return event
-    def update(self, instance, validated_data):
-        speakers = validated_data.pop('speakers', None)
-        tags = validated_data.pop("tags", None)
-        with transaction.atomic():
-            event = Event.objects.select_for_update().get(id=instance.id)
-            event = super().update(event, validated_data)
-            if tags:
-                serializer_tags = TagSerializer(data=tags, many=True)
-                serializer_tags.is_valid(raise_exception=True)
-                tags = serializer_tags.save()
-
-                event.tags.set(tags)
-            if speakers:
-                speakers_serializer = PersonGetOrCreateSerializer(data=speakers, many=True)
-                speakers_serializer.is_valid(raise_exception=True)
-                speakers = speakers_serializer.save()
-
-                event.speakers.set(speakers)
-        return event
 
 class EventListSerializer(serializers.ModelSerializer):
     tags = serializers.SlugRelatedField(
@@ -113,13 +44,12 @@ class EventListSerializer(serializers.ModelSerializer):
             'end_date',
             'registration_start_at',
             'registration_deadline',
-            'capacity',
-            'registered',
             'location',
             'price',
             'organizer',
             'image',
             'speakers',
             'is_active',
-            'dependencies'
+            'dependencies',
+            'is_full'
         ]

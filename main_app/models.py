@@ -59,6 +59,9 @@ class Activity(models.Model):
     def get_registration_class(self):
         raise NotImplementedError
 
+    def __str__(self):
+        return self.title
+
 class EventParticipant(models.Model):
     event = models.ForeignKey('main_app.Event', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -71,7 +74,8 @@ class EventParticipant(models.Model):
                 name="unique_event_person"
             )
         ]
-
+    def __str__(self):
+        return f'{self.event} --- {self.person}'
 class CourseParticipant(models.Model):
     course = models.ForeignKey('main_app.Course', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -84,6 +88,9 @@ class CourseParticipant(models.Model):
                 name="unique_course_person"
             )
         ]
+
+    def __str__(self):
+        return f'{self.course} --- {self.person}'
 
 class Course(Activity):
     tags = models.ManyToManyField(Tag, related_name='courses', blank=True)
