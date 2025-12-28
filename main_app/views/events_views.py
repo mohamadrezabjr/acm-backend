@@ -4,12 +4,11 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from main_app.serializers import EventCreateSerializer, EventListSerializer
+from main_app.serializers.events_serializers import EventCreateSerializer, EventListSerializer
 from main_app.models import Event
 from main_app.permissions import IsCreator, IsAdmin, IsSuperUser
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.db import transaction
 from registration_app.services import RegistrationResultType
 
 class EventListAPIView(ListAPIView):

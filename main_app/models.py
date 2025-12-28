@@ -105,6 +105,7 @@ class Course(Activity):
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_courses', through='CourseParticipant')
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
+    is_full = models.BooleanField(default=False)
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
@@ -148,6 +149,8 @@ class Course(Activity):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        if self.registered >= self.capacity:
+            self.is_full = True
         super().save(*args, **kwargs)
 
 class Event(Activity):
@@ -170,6 +173,7 @@ class Event(Activity):
     participants = models.ManyToManyField(Person, blank=True, related_name='registered_events', through='EventParticipant')
     is_active = models.BooleanField(default=True)
     dependencies = models.JSONField(default=list, blank=True, null=True)
+    is_full = models.BooleanField(default=False)
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
@@ -216,4 +220,6 @@ class Event(Activity):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{self.title}-{uuid.uuid4().hex}"
+        if self.registered >= self.capacity:
+            self.is_full = True
         super().save(*args, **kwargs)

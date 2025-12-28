@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from main_app.serializers import EventListSerializer, CourseListSerializer
+from main_app.serializers.events_serializers import EventListSerializer
+from main_app.serializers.courses_serializers import  CourseListSerializer
 
 class AnalyticsSerializer(serializers.Serializer):
     total_users = serializers.IntegerField()

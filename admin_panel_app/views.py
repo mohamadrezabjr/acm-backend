@@ -1,10 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from admin_panel_app.serializers import AnalyticsSerializer
 from main_app.models import Event, Course,EventParticipant, CourseParticipant
-from main_app.serializers import EventListSerializer, CourseListSerializer
 from auth_app.models import User
 from rest_framework.response import Response
 from main_app.permissions import IsAdmin, IsCreator

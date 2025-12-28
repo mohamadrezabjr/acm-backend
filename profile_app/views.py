@@ -2,9 +2,7 @@ import json
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from auth_app.models import Person
-from main_app.serializers import EventListSerializer
+from main_app.serializers.events_serializers import EventListSerializer
 from auth_app.serializers import PersonSerializer
 from rest_framework.permissions import IsAuthenticated
 

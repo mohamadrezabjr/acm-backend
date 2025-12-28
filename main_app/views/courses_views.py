@@ -1,15 +1,12 @@
 import json
-from functools import partial
 
 from django.shortcuts import get_object_or_404
-from django.template.context_processors import request
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from main_app.serializers import CourseListSerializer, CourseCreateSerializer
+from main_app.serializers.courses_serializers import CourseListSerializer, CourseCreateSerializer
 from main_app.models import Course
 from main_app.permissions import IsCreator, IsAdmin, IsSuperUser
 from registration_app.services import RegistrationResultType
