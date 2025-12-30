@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from auth_app.serializers import PersonSerializer
 from main_app.models import EventParticipant, CourseParticipant
 from main_app.serializers.courses_serializers import CourseListSerializer
 from main_app.serializers.events_serializers import EventListSerializer

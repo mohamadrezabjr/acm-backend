@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 from auth_app.models import Person
-from auth_app.serializers import PersonGetOrCreateSerializer
+from auth_app.serializers import PersonGetOrCreateSerializer, PersonSerializer
 from main_app.models import Tag, Event, Course, TimePlan, EventParticipant, CourseParticipant
 from main_app.serializers.courses_serializers import TimePlanSerializer
 from main_app.serializers.general_serializers import TagSerializer
@@ -272,3 +272,19 @@ class AnalyticsSerializer(serializers.Serializer):
 
     recent_events= AdminEventListSerializer(many = True)
     recent_courses = AdminCourseListSerializer(many = True)
+
+class AdminEventParticipantSerializer(serializers.ModelSerializer):
+    event = AdminEventListSerializer(many=True)
+    person = PersonSerializer()
+
+    class Meta:
+        model = EventParticipant
+        fields = '__all__'
+
+class AdminCourseParticipantSerializer(serializers.ModelSerializer):
+    course = AdminCourseListSerializer(many=True)
+    person = PersonSerializer()
+
+    class Meta:
+        model = EventParticipant
+        fields = '__all__'
