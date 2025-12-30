@@ -61,11 +61,32 @@ class Activity(models.Model):
 
     def __str__(self):
         return self.title
+class StatusChoices(models.TextChoices):
+    ACCEPTED = ('accepted', 'تایید  شده')
+    PENDING = ('pending', 'در حال پردازش')
+    CANCELLED = ('cancelled', 'لغو شده')
 
 class EventParticipant(models.Model):
     event = models.ForeignKey('main_app.Event', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    first_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    last_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    email_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    phone_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    student_id_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    status = models.CharField(choices=StatusChoices, default=StatusChoices.ACCEPTED, max_length=20)
     joined_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.first_name_at_registration :
+            user = self.person.user
+            self.first_name_at_registration = self.person.first_name or None
+            self.last_name_at_registration = self.person.last_name or None
+            self.email_at_registration = user.email if user else None
+            self.phone_at_registration = user.phone if user else None
+            self.student_id_at_registration = self.person.student_id or None
+
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
@@ -76,10 +97,28 @@ class EventParticipant(models.Model):
         ]
     def __str__(self):
         return f'{self.event} --- {self.person}'
+
 class CourseParticipant(models.Model):
     course = models.ForeignKey('main_app.Course', on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    first_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    last_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    email_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    phone_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    student_id_at_registration = models.CharField(max_length=256, null=True, blank=True)
+    status = models.CharField(choices=StatusChoices, default=StatusChoices.ACCEPTED, max_length=20)
     joined_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.first_name_at_registration :
+            user = self.person.user
+            self.first_name_at_registration = self.person.first_name or None
+            self.last_name_at_registration = self.person.last_name or None
+            self.email_at_registration = user.email if user else None
+            self.phone_at_registration = user.phone if user else None
+            self.student_id_at_registration = self.person.student_id or None
+
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
