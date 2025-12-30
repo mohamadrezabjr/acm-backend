@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from auth_app.models import Person
 from auth_app.serializers import PersonGetOrCreateSerializer
-from main_app.models import Tag, Event, Course, TimePlan
+from main_app.models import Tag, Event, Course, TimePlan, EventParticipant, CourseParticipant
 from main_app.serializers.courses_serializers import TimePlanSerializer
 from main_app.serializers.general_serializers import TagSerializer
 

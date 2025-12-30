@@ -167,7 +167,7 @@ class CourseUpdateAPIView(UpdateAPIView):
 
         serializer = self.get_serializer(
             instance = instance,
-            data =data,
+            data = data,
             partial = True
         )
         serializer.is_valid(raise_exception = True)
