@@ -8,13 +8,14 @@ from auth_app.managers import UserManager
 def valid_phone_ir(value):
     pattern = r'^09\d{9}$'
     if not re.match(pattern , value) or len(value) != 11:
-        raise ValidationError("شماره تلفن نامعتبر است")
+        raise ValidationError("phone number is not valid")
     return value
 
 class User(PermissionsMixin, AbstractBaseUser):
     phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True)
     is_admin = models.BooleanField(default=False)
     is_creator = models.BooleanField(default=False)
+    email = models.EmailField(unique=True, null=True, blank=True)
 
     USERNAME_FIELD = 'phone'
 
@@ -37,7 +38,6 @@ class User(PermissionsMixin, AbstractBaseUser):
 
 class Person(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
-    email = models.EmailField(null=True, blank=True)
     first_name = models.CharField(max_length=128, null=True, blank=True)
     last_name = models.CharField(max_length=128, null=True, blank=True)
     position = models.CharField(max_length=64, null=True, blank = True)
@@ -46,4 +46,4 @@ class Person(models.Model):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} : {self.student_id}"
+        return f"{self.first_name} {self.last_name} : {self.user}"
