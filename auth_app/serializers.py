@@ -8,6 +8,17 @@ User = get_user_model()
 
 class PersonSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(required=False, read_only=True)
+    email = serializers.SerializerMethodField()
+    phone = serializers.SerializerMethodField()
+
+    def get_phone(self, obj):
+        if not obj.user:
+            return None
+        return obj.user.phone
+    def get_email(self, obj):
+        if not obj.user:
+            return None
+        return obj.user.email
     class Meta:
         model = Person
         fields ='__all__'
@@ -41,15 +52,23 @@ class AuthMeSerializer(serializers.ModelSerializer):
     person_id = serializers.SerializerMethodField()
 
     def get_first_name(self, obj):
+        if not obj.person:
+            return None
         return obj.person.first_name
     def get_last_name(self, obj):
+        if not obj.person:
+            return None
         return obj.person.last_name
     def get_bio(self, obj):
+        if not obj.person:
+            return None
         return obj.person.bio
     def get_student_id(self, obj):
+        if not obj.person:
+            return None
         return obj.person.student_id
     def get_avatar(self, obj):
-        if not obj.person.avatar:
+        if not obj.person or not obj.person.avatar:
             return None
         return obj.person.avatar.url
     def get_person_id(self, obj):

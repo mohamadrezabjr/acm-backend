@@ -16,6 +16,6 @@ urlpatterns = [
     path('courses/<str:slug>/update/', views.CourseUpdateAPIView.as_view(), name = 'course_update'),
 
     path('registrations/events/', views.AdminEventParticipantListAPIView.as_view(), name= 'admin_registration_event_list'),
-    path('registrations/courses/', views.AdminEventParticipantListAPIView.as_view(), name = 'admin_registration_course_list'),
+    path('registrations/courses/', views.AdminCourseParticipantListAPIView.as_view(), name = 'admin_registration_course_list'),
 
 ]

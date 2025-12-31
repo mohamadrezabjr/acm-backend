@@ -227,6 +227,6 @@ class AdminEventParticipantListAPIView(ListAPIView):
 
 class AdminCourseParticipantListAPIView(ListAPIView):
     serializer_class = AdminCourseParticipantSerializer
-    queryset = CourseParticipant.objects.all().prefetch_related('person', 'event')
+    queryset = CourseParticipant.objects.all().prefetch_related('person', 'course')
     permission_classes = [IsAuthenticated, IsCreator|IsAdmin]
 

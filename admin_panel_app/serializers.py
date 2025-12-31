@@ -274,7 +274,7 @@ class AnalyticsSerializer(serializers.Serializer):
     recent_courses = AdminCourseListSerializer(many = True)
 
 class AdminEventParticipantSerializer(serializers.ModelSerializer):
-    event = AdminEventListSerializer(many=True)
+    event = AdminEventListSerializer()
     person = PersonSerializer()
 
     class Meta:
@@ -282,9 +282,9 @@ class AdminEventParticipantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AdminCourseParticipantSerializer(serializers.ModelSerializer):
-    course = AdminCourseListSerializer(many=True)
+    course = AdminCourseListSerializer()
     person = PersonSerializer()
 
     class Meta:
-        model = EventParticipant
+        model = CourseParticipant
         fields = '__all__'
