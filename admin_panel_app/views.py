@@ -4,7 +4,15 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, R
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from admin_panel_app.serializers import AnalyticsSerializer, EventCreateSerializer, CourseCreateSerializer, AdminCourseListSerializer, AdminEventListSerializer
+from admin_panel_app.serializers import (
+    AnalyticsSerializer,
+    EventCreateSerializer,
+    CourseCreateSerializer,
+    AdminCourseListSerializer,
+    AdminEventListSerializer,
+    AdminEventParticipantSerializer,
+    AdminCourseParticipantSerializer,
+)
 from main_app.models import Event, Course,EventParticipant, CourseParticipant
 from auth_app.models import User
 from rest_framework.response import Response
@@ -211,3 +219,14 @@ class AdminCourseRetrieveAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsCreator|IsAdmin]
     queryset = Course.objects.all().prefetch_related('tags', 'instructors', 'time_plans')
     lookup_field = 'slug'
+
+class AdminEventParticipantListAPIView(ListAPIView):
+    serializer_class = AdminEventParticipantSerializer
+    queryset = EventParticipant.objects.all().prefetch_related('person', 'event')
+    permission_classes = [IsAuthenticated, IsCreator|IsAdmin]
+
+class AdminCourseParticipantListAPIView(ListAPIView):
+    serializer_class = AdminCourseParticipantSerializer
+    queryset = CourseParticipant.objects.all().prefetch_related('person', 'course')
+    permission_classes = [IsAuthenticated, IsCreator|IsAdmin]
+
