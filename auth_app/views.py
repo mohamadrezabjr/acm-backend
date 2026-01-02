@@ -7,7 +7,7 @@ from django.db import transaction, IntegrityError
 from auth_app.models import PendingRegistration
 from auth_app.serializers import UserRegistrationSerializer, PendingRegistrationSerializer
 from auth_app.serializers import AuthMeSerializer
-from auth_app.utils import get_tokens_for_user
+from auth_app.utils import get_tokens_for_user, send_otp_email_for_registration
 
 @api_view(['GET'])
 def auth_me(request):
@@ -26,7 +26,7 @@ class UserRegister(APIView):
 
         if serialized_data.is_valid():
             pending = serialized_data.save()
-            # Send email
+            send_otp_email_for_registration(pending.email, pending.otp, request=request)
             return Response({"detail" : "registration is pending for verification", "registration_id" : str(pending.id)}, status=201)
         return Response(serialized_data.errors, status=400)
 
@@ -48,7 +48,7 @@ class RevalidateRegistrationOTP(APIView):
 
         if pending.can_revalidate:
             pending.revalidate()
-            # Send email
+            send_otp_email_for_registration(pending.email, pending.otp, request=request)
             return Response({"detail" : "registration revalidated"}, status=201)
         remaining_revalidation = pending.remaining_revalidation.total_seconds()
         return Response({"detail" : "revalidation_time_is_not_over", "remaining_revalidation" : remaining_revalidation}, status=400)

@@ -64,12 +64,12 @@ class PendingRegistration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
-    expiration_time = models.DurationField(default=timezone.timedelta(minutes=15))
+    expiration_time = models.DurationField(default=timezone.timedelta(minutes=5))
     revalidation_time = models.DurationField(default=timezone.timedelta(minutes=2))
 
     @property
     def is_expired(self):
-        return (timezone.now()  - self.created_at) > self.expiration_time
+        return (timezone.now()  - self.updated_at) > self.expiration_time
     @property
     def can_revalidate(self):
         return (timezone.now()  - self.updated_at) > self.revalidation_time
