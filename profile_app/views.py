@@ -49,13 +49,21 @@ class ProfileUpdateAPIView(APIView):
             )
 
         data = json.loads(raw_payload)
+
+
         serializer = PersonSerializer(instance = current_person,data = data)
         serializer.is_valid(raise_exception = True)
         person = serializer.save()
 
-        avatar = request.FILES.get('avatar')
-        if avatar:
-            person.avatar = avatar
-            person.save(update_fields=['avatar'])
+        remove_image = request.data.get('remove-image')
+        if remove_image in ['true', 'True', True, 1]:
+            person.avatar.delete(save = False)
+            person.avatar = None
+            person.save(update_fields = ['avatar'])
+        else:
+            avatar = request.FILES.get('avatar')
+            if avatar:
+                person.avatar = avatar
+                person.save(update_fields=['avatar'])
 
         return Response(serializer.data, status = 200)

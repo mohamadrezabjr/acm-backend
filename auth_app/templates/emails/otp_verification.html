@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کد تایید</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-container {
+            background: white;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .greeting {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .otp-container {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .otp-label {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .otp-code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .otp-note {
+            font-size: 13px;
+            color: #e53e3e;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .warning-box {
+            background: #fff5f5;
+            border-right: 4px solid #fc8181;
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box p {
+            color: #742a2a;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-right: 4px solid #4299e1;
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            color: #2c5282;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .footer {
+            background: #f7fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-text {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .copyright {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                border-radius: 0;
+            }
+
+            .header, .content, .footer {
+                padding: 25px 20px;
+            }
+
+            .otp-code {
+                font-size: 36px;
+                letter-spacing: 4px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="ACM" class="logo-img">
+            </div>
+            <h1> ACM </h1>
+            <p>دانشگاه خوارزمی</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">
+                سلام کاربر عزیز! 👋
+            </div>
+
+            <p class="message">
+                با تشکر از ثبت‌نام شما در سایت ما.<br>
+                برای تکمیل فرآیند ثبت‌نام، لطفاً کد تایید زیر را در صفحه مربوطه وارد کنید:
+            </p>
+
+            <!-- OTP Box -->
+            <div class="otp-container">
+                <div class="otp-label">کد تایید شما:</div>
+                <div class="otp-code">{{ otp_code }}</div>
+                <div class="otp-note">⏰ این کد تا 5 دقیقه آینده معتبر است</div>
+            </div>
+
+            <!-- Warning -->
+            <div class="warning-box">
+                <p>
+                    <strong>⚠️ نکته امنیتی:</strong><br>
+                    این کد محرمانه است و هرگز آن را با دیگران به اشتراک نگذارید.
+                </p>
+            </div>
+
+            <!-- Info -->
+            <div class="info-box">
+                <p>
+                    <strong>ℹ️ راهنما:</strong><br>
+                    اگر شما درخواست ثبت‌نام نداده‌اید، لطفاً این ایمیل را نادیده بگیرید و کد را با کسی به اشتراک نگذارید.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">
+                این ایمیل به صورت خودکار ارسال شده است.<br>
+                برای اطلاعات بیشتر با ما در تماس باشید.
+            </p>
+
+            <div class="social-links">
+                <a href="https://t.me/ACMkhu">تلگرام</a> |
+                <a href="https://www.linkedin.com/company/acm-khu/">لینکدین</a>
+            </div>
+
+            <p class="copyright">
+                © 2024 انجمن علمی ACM دانشگاه خوارزمی<br>
+                تمامی حقوق محفوظ است.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
