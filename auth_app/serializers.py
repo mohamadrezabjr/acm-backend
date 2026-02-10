@@ -23,6 +23,32 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields ='__all__'
 
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    user = PrimaryKeyRelatedField(required=False, read_only=True)
+    phone = serializers.CharField(required=False, validators=[valid_phone_ir])
+
+    def get_phone(self, obj):
+        if not obj.user:
+            return None
+        return obj.user.phone
+
+    def validate_phone(self, value):
+        if User.objects.filter(phone=value).exists() and value != self.instance.user.phone:
+            raise serializers.ValidationError("Phone already exists")
+        return value
+
+    def update(self, instance, validated_data):
+        phone = validated_data.get("phone")
+        if phone :
+            instance.user.phone = phone
+            instance.user.save()
+        super().update(instance, validated_data)
+        return instance
+
+    class Meta:
+        model = Person
+        fields ='__all__'
+
 class PersonGetOrCreateSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False, allow_null=True)
     user = serializers.PrimaryKeyRelatedField(
@@ -91,7 +117,7 @@ class AuthMeSerializer(serializers.ModelSerializer):
             'avatar'
         ]
 class UserRegistrationSerializer(serializers.Serializer):
-    phone = serializers.CharField(validators=[valid_phone_ir])
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
     hashed_password = serializers.CharField(write_only=True)
     student_id = serializers.CharField(max_length=10, required=False, allow_null=True)
     first_name = serializers.CharField(max_length=128, required=False, allow_null=True)
@@ -109,7 +135,7 @@ class UserRegistrationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         email = validated_data.pop('email')
-        phone = validated_data.pop('phone')
+        phone = validated_data.pop('phone', None)
         hashed_password = validated_data.pop('hashed_password')
         user = User.objects.create(phone = phone, email = email)
         user.password = hashed_password
@@ -117,6 +143,7 @@ class UserRegistrationSerializer(serializers.Serializer):
         person = Person.objects.create(user = user, **validated_data)
         return user
 class PendingRegistrationSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
     class Meta:
         model = PendingRegistration
         fields = [

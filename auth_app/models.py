@@ -16,12 +16,12 @@ def valid_phone_ir(value):
     return value
 
 class User(PermissionsMixin, AbstractBaseUser):
-    phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True)
+    phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True, null=True)
     is_admin = models.BooleanField(default=False)
     is_creator = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
 
-    USERNAME_FIELD = 'phone'
+    USERNAME_FIELD = 'email'
 
     @property
     def is_staff(self):
@@ -38,7 +38,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.phone
+        return self.email
 
 class Person(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
@@ -54,7 +54,7 @@ class Person(models.Model):
 
 class PendingRegistration(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    phone = models.CharField(max_length=11, validators=[validate_integer, valid_phone_ir])
+    phone = models.CharField(max_length=11, validators=[validate_integer, valid_phone_ir], null=True, blank=True)
     email = models.EmailField()
     password = models.CharField(max_length=128)
     first_name= models.CharField(max_length=128, null=True, blank=True)
@@ -64,7 +64,7 @@ class PendingRegistration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
-    expiration_time = models.DurationField(default=timezone.timedelta(minutes=5))
+    expiration_time = models.DurationField(default=timezone.timedelta(minutes=7))
     revalidation_time = models.DurationField(default=timezone.timedelta(minutes=2))
 
     @property

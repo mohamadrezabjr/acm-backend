@@ -12,6 +12,7 @@ def check_dependencies(person, dependencies):
         'student_id' : person.student_id,
         'first_name' : person.first_name,
         'last_name' : person.last_name,
+        'phone' : person.user.phone,
     }
     for dependency in dependencies:
         if not dependency_table[dependency]:
@@ -155,6 +156,7 @@ class Course(Activity):
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
+        person_fields.add("phone")
         invalid = set(self.dependencies) - person_fields
         if invalid:
             raise ValidationError({
@@ -223,6 +225,7 @@ class Event(Activity):
 
     def clean(self):
         person_fields = {f.name for f in Person._meta.get_fields()}
+        person_fields.add("phone")
         invalid = set(self.dependencies) - person_fields
         if invalid:
             raise ValidationError({

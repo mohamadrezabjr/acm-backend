@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from main_app.models import EventParticipant, CourseParticipant
 from profile_app.serializers import EventParticipantSerializer, CourseParticipantSerializer
-from auth_app.serializers import PersonSerializer
+from auth_app.serializers import ProfileUpdateSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class RegisteredEventsListAPIView(generics.ListAPIView):
@@ -50,9 +50,8 @@ class ProfileUpdateAPIView(APIView):
 
         data = json.loads(raw_payload)
 
-
-        serializer = PersonSerializer(instance = current_person,data = data)
-        serializer.is_valid(raise_exception = True)
+        serializer = ProfileUpdateSerializer(instance=current_person, data=data)
+        serializer.is_valid(raise_exception=True)
         person = serializer.save()
 
         remove_image = request.data.get('remove-image')
