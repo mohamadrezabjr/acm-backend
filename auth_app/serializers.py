@@ -91,7 +91,7 @@ class AuthMeSerializer(serializers.ModelSerializer):
             'avatar'
         ]
 class UserRegistrationSerializer(serializers.Serializer):
-    phone = serializers.CharField(validators=[valid_phone_ir])
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
     hashed_password = serializers.CharField(write_only=True)
     student_id = serializers.CharField(max_length=10, required=False, allow_null=True)
     first_name = serializers.CharField(max_length=128, required=False, allow_null=True)
@@ -109,7 +109,7 @@ class UserRegistrationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         email = validated_data.pop('email')
-        phone = validated_data.pop('phone')
+        phone = validated_data.pop('phone', None)
         hashed_password = validated_data.pop('hashed_password')
         user = User.objects.create(phone = phone, email = email)
         user.password = hashed_password
@@ -117,6 +117,7 @@ class UserRegistrationSerializer(serializers.Serializer):
         person = Person.objects.create(user = user, **validated_data)
         return user
 class PendingRegistrationSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
     class Meta:
         model = PendingRegistration
         fields = [

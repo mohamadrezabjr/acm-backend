@@ -54,7 +54,7 @@ class Person(models.Model):
 
 class PendingRegistration(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    phone = models.CharField(max_length=11, validators=[validate_integer, valid_phone_ir])
+    phone = models.CharField(max_length=11, validators=[validate_integer, valid_phone_ir], null=True, blank=True)
     email = models.EmailField()
     password = models.CharField(max_length=128)
     first_name= models.CharField(max_length=128, null=True, blank=True)
@@ -64,7 +64,7 @@ class PendingRegistration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
-    expiration_time = models.DurationField(default=timezone.timedelta(minutes=5))
+    expiration_time = models.DurationField(default=timezone.timedelta(minutes=7))
     revalidation_time = models.DurationField(default=timezone.timedelta(minutes=2))
 
     @property
