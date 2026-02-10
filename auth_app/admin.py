@@ -1,5 +1,5 @@
 from django.contrib import admin
-from auth_app.models import Person, User
+from auth_app.models import Person, User, PendingRegistration
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .forms import UserCreationForm , UserChangeForm
 
@@ -50,3 +50,4 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Person)
+admin.site.register(PendingRegistration)

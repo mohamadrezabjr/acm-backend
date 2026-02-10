@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
-
-from auth_app.models import Person, valid_phone_ir
+from django.contrib.auth.hashers import make_password
+from auth_app.models import Person, valid_phone_ir, PendingRegistration
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -19,6 +19,32 @@ class PersonSerializer(serializers.ModelSerializer):
         if not obj.user:
             return None
         return obj.user.email
+    class Meta:
+        model = Person
+        fields ='__all__'
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    user = PrimaryKeyRelatedField(required=False, read_only=True)
+    phone = serializers.CharField(required=False, validators=[valid_phone_ir])
+
+    def get_phone(self, obj):
+        if not obj.user:
+            return None
+        return obj.user.phone
+
+    def validate_phone(self, value):
+        if User.objects.filter(phone=value).exists() and value != self.instance.user.phone:
+            raise serializers.ValidationError("Phone already exists")
+        return value
+
+    def update(self, instance, validated_data):
+        phone = validated_data.get("phone")
+        if phone :
+            instance.user.phone = phone
+            instance.user.save()
+        super().update(instance, validated_data)
+        return instance
+
     class Meta:
         model = Person
         fields ='__all__'
@@ -91,13 +117,43 @@ class AuthMeSerializer(serializers.ModelSerializer):
             'avatar'
         ]
 class UserRegistrationSerializer(serializers.Serializer):
-    phone = serializers.CharField(validators=[valid_phone_ir])
-    password = serializers.CharField(write_only=True)
-    student_id = serializers.CharField(max_length=10, required=False)
-    first_name = serializers.CharField(max_length=128, required=False)
-    last_name = serializers.CharField(max_length=128, required=False)
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
+    hashed_password = serializers.CharField(write_only=True)
+    student_id = serializers.CharField(max_length=10, required=False, allow_null=True)
+    first_name = serializers.CharField(max_length=128, required=False, allow_null=True)
+    last_name = serializers.CharField(max_length=128, required=False, allow_null=True)
     email = serializers.EmailField(required=False)
 
+    def validate_phone(self, value):
+        if User.objects.filter(phone=value).exists():
+            raise serializers.ValidationError('user with this phone already exists')
+        return value
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('user with this email already exists')
+        return value
+
+    def create(self, validated_data):
+        email = validated_data.pop('email')
+        phone = validated_data.pop('phone', None)
+        hashed_password = validated_data.pop('hashed_password')
+        user = User.objects.create(phone = phone, email = email)
+        user.password = hashed_password
+        user.save()
+        person = Person.objects.create(user = user, **validated_data)
+        return user
+class PendingRegistrationSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
+    class Meta:
+        model = PendingRegistration
+        fields = [
+            'phone',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'student_id',
+        ]
     def validate_phone(self, value):
         if User.objects.filter(phone = value).exists():
             raise serializers.ValidationError('user with this phone already exists')
@@ -106,12 +162,9 @@ class UserRegistrationSerializer(serializers.Serializer):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError('user with this email already exists')
         return value
+
     def create(self, validated_data):
-        phone = validated_data.pop('phone')
-        password = validated_data.pop('password')
-        email = validated_data.pop('email')
-        user = User.objects.create(phone = phone, email = email)
-        user.set_password(password)
-        user.save()
-        person = Person.objects.create(user = user, **validated_data)
-        return user
+        raw_password = validated_data.pop('password')
+        hashed_password = make_password(raw_password)
+        pending = PendingRegistration.objects.create(**validated_data, password = hashed_password)
+        return pending
