@@ -23,6 +23,32 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields ='__all__'
 
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    user = PrimaryKeyRelatedField(required=False, read_only=True)
+    phone = serializers.CharField(required=False, validators=[valid_phone_ir])
+
+    def get_phone(self, obj):
+        if not obj.user:
+            return None
+        return obj.user.phone
+
+    def validate_phone(self, value):
+        if User.objects.filter(phone=value).exists():
+            raise serializers.ValidationError("Phone already exists")
+        return value
+
+    def update(self, instance, validated_data):
+        phone = validated_data.get("phone")
+        if phone :
+            instance.user.phone = phone
+            instance.user.save()
+        super().update(instance, validated_data)
+        return instance
+
+    class Meta:
+        model = Person
+        fields ='__all__'
+
 class PersonGetOrCreateSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False, allow_null=True)
     user = serializers.PrimaryKeyRelatedField(
