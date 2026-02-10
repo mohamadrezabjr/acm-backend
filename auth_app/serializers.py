@@ -33,7 +33,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         return obj.user.phone
 
     def validate_phone(self, value):
-        if User.objects.filter(phone=value).exists():
+        if User.objects.filter(phone=value).exists() and value != self.instance.user.phone:
             raise serializers.ValidationError("Phone already exists")
         return value
 
