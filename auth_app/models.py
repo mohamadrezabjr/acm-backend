@@ -16,12 +16,12 @@ def valid_phone_ir(value):
     return value
 
 class User(PermissionsMixin, AbstractBaseUser):
-    phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True)
+    phone = models.CharField(max_length = 11, validators=[validate_integer, valid_phone_ir], unique = True, null=True)
     is_admin = models.BooleanField(default=False)
     is_creator = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
 
-    USERNAME_FIELD = 'phone'
+    USERNAME_FIELD = 'email'
 
     @property
     def is_staff(self):
@@ -38,7 +38,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.phone
+        return self.email
 
 class Person(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
