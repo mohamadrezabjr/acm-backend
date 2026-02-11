@@ -33,7 +33,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         return obj.user.phone
 
     def validate_phone(self, value):
-        if User.objects.filter(phone=value).exists() and value != self.instance.user.phone:
+        if value and User.objects.filter(phone=value).exists() and value != self.instance.user.phone:
             raise serializers.ValidationError("Phone already exists")
         return value
 
@@ -125,7 +125,7 @@ class UserRegistrationSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False)
 
     def validate_phone(self, value):
-        if User.objects.filter(phone=value).exists():
+        if value and User.objects.filter(phone=value).exists():
             raise serializers.ValidationError('user with this phone already exists')
         return value
     def validate_email(self, value):
@@ -142,8 +142,9 @@ class UserRegistrationSerializer(serializers.Serializer):
         user.save()
         person = Person.objects.create(user = user, **validated_data)
         return user
+
 class PendingRegistrationSerializer(serializers.ModelSerializer):
-    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_blank=True, allow_null=True)
+    phone = serializers.CharField(validators=[valid_phone_ir], required=False, allow_null=True)
     class Meta:
         model = PendingRegistration
         fields = [
@@ -155,7 +156,7 @@ class PendingRegistrationSerializer(serializers.ModelSerializer):
             'student_id',
         ]
     def validate_phone(self, value):
-        if User.objects.filter(phone = value).exists():
+        if value and User.objects.filter(phone = value).exists():
             raise serializers.ValidationError('user with this phone already exists')
         return value
     def validate_email(self, value):
@@ -165,6 +166,7 @@ class PendingRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raw_password = validated_data.pop('password')
+
         hashed_password = make_password(raw_password)
         pending = PendingRegistration.objects.create(**validated_data, password = hashed_password)
         return pending
