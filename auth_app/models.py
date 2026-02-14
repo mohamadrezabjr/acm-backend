@@ -20,7 +20,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_creator = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
-    password_change_verified_time = models.DateTimeField(null=True, blank=True)
+    password_changed_at = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     CHANGE_PASSWORD_TIME = timezone.timedelta(minutes=10)
@@ -39,12 +39,13 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     @property
     def can_change_password(self):
-        if not self.password_change_verified_time:
-            return False
-        passed_time = timezone.now() - self.password_change_verified_time
+        if not self.password_changed_at:
+            return True
+        passed_time = timezone.now() - self.password_changed_at
         if passed_time > self.CHANGE_PASSWORD_TIME:
-            return False
-        return True
+            return True
+
+        return False
 
     objects = UserManager()
 
@@ -95,7 +96,7 @@ class PendingRegistration(models.Model):
 
 class PasswordChangeOTP(models.Model):
     otp = models.CharField(max_length=6, default=generate_random_otp, null = True, blank=True, unique=True)
-    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='password_change_otp')
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
@@ -124,3 +125,7 @@ class PasswordChangeOTP(models.Model):
     def revalidate(self):
         self.otp = generate_random_otp()
         self.save()
+    @property
+    def remaining_revalidation_time(self):
+        remaining = self.revalidation_time - (timezone.now()  - self.updated_at)
+        return max(remaining, timezone.timedelta(0))
