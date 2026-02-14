@@ -15,16 +15,13 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-def send_otp_email_for_registration(user_email, otp, request):
+def send_otp_email_for_registration(user_email, otp):
     subject = 'کد تایید ثبت‌نام - انجمن ACM'
 
-    logo_url = request.build_absolute_uri(
-        static('images/logo.png')
-    )
+
     # Render HTML template
     html_message = render_to_string('emails/otp_verification.html', {
         'otp_code': otp,
-        'logo_url': logo_url,
     })
 
     plain_message = strip_tags(html_message)
