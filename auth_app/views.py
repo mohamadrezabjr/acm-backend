@@ -7,6 +7,8 @@ from auth_app.models import PendingRegistration
 from auth_app.serializers import UserRegistrationSerializer, PendingRegistrationSerializer
 from auth_app.serializers import AuthMeSerializer
 from auth_app.utils import get_tokens_for_user, send_otp_email_for_registration
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 @api_view(['GET'])
 def auth_me(request):
@@ -97,3 +99,11 @@ class VerifyRegistrationOTP(APIView):
             return Response({"success" : "registration verified", "tokens" : tokens}, status=200)
 
         return Response({"invalid_otp": "otp is invalid"}, status=400)
+
+class CanChangePassword(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        user = request.user
+        return Response({"can_change_password" : user.can_change_password }, status=status.HTTP_200_OK)
+
