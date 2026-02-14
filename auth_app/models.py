@@ -3,7 +3,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_integer
-from django.db import models
+from django.db import models, IntegrityError, transaction
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
 from auth_app.managers import UserManager
 from auth_app.utils import generate_random_otp
@@ -20,8 +20,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_creator = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
+    password_changed_at = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
+    CHANGE_PASSWORD_TIME = timezone.timedelta(minutes=10)
 
     @property
     def is_staff(self):
@@ -34,6 +36,16 @@ class User(PermissionsMixin, AbstractBaseUser):
         if self.is_creator:
             return "creator"
         return "user"
+
+    @property
+    def can_change_password(self):
+        if not self.password_changed_at:
+            return True
+        passed_time = timezone.now() - self.password_changed_at
+        if passed_time > self.CHANGE_PASSWORD_TIME:
+            return True
+
+        return False
 
     objects = UserManager()
 
@@ -81,3 +93,39 @@ class PendingRegistration(models.Model):
     def revalidate(self):
         self.otp = generate_random_otp()
         self.save()
+
+class PasswordChangeOTP(models.Model):
+    otp = models.CharField(max_length=6, default=generate_random_otp, null = True, blank=True, unique=True)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='password_change_otp')
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+    expiration_time = models.DurationField(default=timezone.timedelta(minutes=11))
+    revalidation_time = models.DurationField(default=timezone.timedelta(minutes=2))
+
+    def save(self, *args, **kwargs):
+
+        if not self.otp:
+            self.otp = generate_random_otp()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.otp = generate_random_otp()
+
+    @property
+    def is_expired(self):
+        return (timezone.now()  - self.updated_at) > self.expiration_time
+    @property
+    def can_revalidate(self):
+        return (timezone.now()  - self.updated_at) > self.revalidation_time
+
+    def revalidate(self):
+        self.otp = generate_random_otp()
+        self.save()
+    @property
+    def remaining_revalidation_time(self):
+        remaining = self.revalidation_time - (timezone.now()  - self.updated_at)
+        return max(remaining, timezone.timedelta(0))
