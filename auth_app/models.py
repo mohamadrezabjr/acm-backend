@@ -21,6 +21,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_creator = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     password_changed_at = models.DateTimeField(null=True, blank=True)
+    token_version = models.IntegerField(default=0)
 
     USERNAME_FIELD = 'email'
     CHANGE_PASSWORD_TIME = timezone.timedelta(minutes=10)

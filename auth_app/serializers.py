@@ -3,8 +3,18 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from django.contrib.auth.hashers import make_password
 from auth_app.models import Person, valid_phone_ir, PendingRegistration
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['token_version'] = user.token_version
+
+        return token
 
 class PersonSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(required=False, read_only=True)
