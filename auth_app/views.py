@@ -119,6 +119,7 @@ class ChangePassword(APIView):
             if str(otp) == str(user_otp.otp):
                 user.set_password(new_password)
                 user.password_changed_at = timezone.now()
+                user.token_version += 1
                 user.save()
 
                 user_otp.delete()
