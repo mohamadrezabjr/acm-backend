@@ -119,10 +119,12 @@ class ChangePassword(APIView):
             if str(otp) == str(user_otp.otp):
                 user.set_password(new_password)
                 user.password_changed_at = timezone.now()
+                user.token_version += 1
                 user.save()
-
                 user_otp.delete()
-                return Response({"success" : "password changed"}, status=status.HTTP_200_OK)
+                tokens = get_tokens_for_user(user)
+
+                return Response({"success" : "password changed", "tokens" : tokens}, status=status.HTTP_200_OK)
             return Response({"invalid_otp" : "otp is invalid"}, status=400)
         return Response({"missed" : "password and otp is required"}, status=400)
 
