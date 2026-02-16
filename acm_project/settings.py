@@ -46,7 +46,6 @@ else:
     DEBUG = False
 
     ALLOWED_HOSTS = [
-        "5.200.200.200",
         "demo.acmkhu.ir",
         "www.demo.acmkhu.ir",
     ]
@@ -64,7 +63,6 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         "https://demo.acmkhu.ir",
         "https://www.demo.acmkhu.ir",
-        "https://5.200.200.200",
     ]
 
     # ---------- Cookies ----------
