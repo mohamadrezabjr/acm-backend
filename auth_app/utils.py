@@ -52,3 +52,19 @@ def send_otp_email_for_password_reset(user_email, otp):
         [user_email],
         html_message=html_message,
     )
+def send_otp_email_for_forgot_password(user_email, otp):
+    subject = "کد درخواست فراموشی رمز - انجمن ACM"
+
+    html_message = render_to_string('emails/forgot_password.html', {
+        'otp_code': otp,
+    })
+
+    plain_message = strip_tags(html_message)
+
+    send_mail(
+        subject,
+        plain_message,
+        str(os.environ.get('EMAIL_HOST_USER')),
+        [user_email],
+        html_message=html_message,
+    )
