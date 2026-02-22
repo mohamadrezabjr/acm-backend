@@ -16,6 +16,9 @@ from admin_panel_app.views.courses import (
     CourseUpdateAPIView,
     AdminCourseParticipantListAPIView
 )
+from admin_panel_app.views.users import (
+    UserListRetrieveAPIView
+)
 
 urlpatterns = [
     path('dashboard-stats/', AdminDashboardStatusAPIView.as_view()),
@@ -34,5 +37,8 @@ urlpatterns = [
 
     path('registrations/events/', AdminEventParticipantListAPIView.as_view(), name= 'admin_registration_event_list'),
     path('registrations/courses/', AdminCourseParticipantListAPIView.as_view(), name = 'admin_registration_course_list'),
+
+    path('users/', UserListRetrieveAPIView.as_view(), name = 'users_list'),
+    path('users/<pk>', UserListRetrieveAPIView.as_view(), name = "user_detail")
 
 ]
