@@ -8,7 +8,7 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from admin_panel_app.serializers import (
+from admin_panel_app.serializers.courses import (
     CourseCreateSerializer,
     AdminCourseListSerializer,
     AdminCourseParticipantSerializer,
@@ -109,4 +109,3 @@ class AdminCourseParticipantListAPIView(ListAPIView):
     serializer_class = AdminCourseParticipantSerializer
     queryset = CourseParticipant.objects.all().prefetch_related('person', 'course')
     permission_classes = [IsAuthenticated, IsCreator|IsAdmin]
-

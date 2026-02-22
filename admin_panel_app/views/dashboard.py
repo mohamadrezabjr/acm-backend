@@ -1,6 +1,6 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from admin_panel_app.serializers import AnalyticsSerializer
+from admin_panel_app.serializers.dashboard import AnalyticsSerializer
 from main_app.models import Event, Course,EventParticipant, CourseParticipant
 from auth_app.models import User
 from rest_framework.response import Response
@@ -24,5 +24,3 @@ class AdminDashboardStatusAPIView(APIView):
 
         serializer = AnalyticsSerializer(analytics)
         return Response(serializer.data, status = 200)
-
-

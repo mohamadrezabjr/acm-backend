@@ -9,7 +9,7 @@ from rest_framework.generics import (
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from admin_panel_app.serializers import (
+from admin_panel_app.serializers.events import (
     EventCreateSerializer,
     AdminEventListSerializer,
     AdminEventParticipantSerializer,
