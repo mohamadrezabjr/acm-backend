@@ -36,7 +36,6 @@ class RegisteredCoursesListAPIView(generics.ListAPIView):
 
 class ProfileUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
 
     def put(self, request):
         current_person = request.user.person

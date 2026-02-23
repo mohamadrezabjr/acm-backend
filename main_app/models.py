@@ -69,7 +69,7 @@ class StatusChoices(models.TextChoices):
 
 class EventParticipant(models.Model):
     event = models.ForeignKey('main_app.Event', on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='event_participants')
     first_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
     last_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
     email_at_registration = models.CharField(max_length=256, null=True, blank=True)
@@ -101,7 +101,7 @@ class EventParticipant(models.Model):
 
 class CourseParticipant(models.Model):
     course = models.ForeignKey('main_app.Course', on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="course_participants")
     first_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
     last_name_at_registration = models.CharField(max_length=256, null=True, blank=True)
     email_at_registration = models.CharField(max_length=256, null=True, blank=True)
