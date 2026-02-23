@@ -17,7 +17,7 @@ from admin_panel_app.views.courses import (
     AdminCourseParticipantListAPIView
 )
 from admin_panel_app.views.users import (
-    UserListRetrieveAPIView
+    UserListRetrieveAPIView, UserDetailAPIView
 )
 
 urlpatterns = [
@@ -39,6 +39,6 @@ urlpatterns = [
     path('registrations/courses/', AdminCourseParticipantListAPIView.as_view(), name = 'admin_registration_course_list'),
 
     path('users/', UserListRetrieveAPIView.as_view(), name = 'users_list'),
-    path('users/<pk>', UserListRetrieveAPIView.as_view(), name = "user_detail")
+    path('users/<pk>/', UserDetailAPIView.as_view(), name = "user_detail")
 
 ]
