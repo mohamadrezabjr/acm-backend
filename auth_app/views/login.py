@@ -4,6 +4,7 @@ from auth_app.serializers import AuthMeSerializer
 
 @api_view(['GET'])
 def auth_me(request):
+    print(request.COOKIES)
     if request.user.is_authenticated:
         user = request.user
         data = AuthMeSerializer(user).data
